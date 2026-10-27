@@ -39,6 +39,18 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   animation: breathe 3.6s ease-in-out infinite;
 }
 .hint:focus-visible { outline: 1px solid var(--glow); outline-offset: 2px; color: var(--ink); }
+.sound {
+  position: fixed; right: max(18px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom));
+  min-height: 44px; padding: 0 14px; display: flex; align-items: center; gap: 8px;
+  background: transparent; border: 1px solid #2a2733; border-radius: 22px; color: var(--ink-3);
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+}
+.sound:hover, .sound[aria-pressed="true"] { color: var(--ink); border-color: #4a4458; }
+.sound:focus-visible { outline: 1px solid var(--glow); outline-offset: 2px; }
+.sound svg { width: 16px; height: 16px; }
+.sound .on { display: none; }
+.sound[aria-pressed="true"] .on { display: inline; }
+.sound[aria-pressed="true"] .off { display: none; }
 @keyframes breathe { 0%, 100% { opacity: .45 } 50% { opacity: .9 } }
 @media (prefers-reduced-motion: reduce) { .hint { animation: none; opacity: .8 } }
 </style>
@@ -49,6 +61,14 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
 <span class="mark">Unsaid</span>
 <span class="meta">1,024 · BNB Chain</span>
 <a class="hint" id="hint" href="mint.html">Click anywhere</a>
+<button type="button" class="sound" id="sound" aria-pressed="false" aria-label="Thunder sound">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
+    <path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path>
+    <path class="off" d="M17 9l5 6M22 9l-5 6"></path>
+  </svg>
+  <span class="off">Sound off</span><span class="on">Sound on</span>
+</button>
 
 <script>
 const cv = document.getElementById("sky"), ctx = cv.getContext("2d");
@@ -133,10 +153,70 @@ function draw(now) {
 }
 requestAnimationFrame(draw);
 
-/* weather: a bolt every few seconds somewhere in the dark */
+/* thunder, synthesised: a white-noise crack for near strikes, a brown-noise rumble that rolls and fades */
+let ac = null, master = null, white = null, brown = null, soundOn = false;
+function audio() {
+  if (!ac) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ac = new AC();
+    const comp = ac.createDynamicsCompressor();
+    master = ac.createGain(); master.gain.value = .9;
+    master.connect(comp); comp.connect(ac.destination);
+    const len = ac.sampleRate * 5;
+    white = ac.createBuffer(1, len, ac.sampleRate); brown = ac.createBuffer(1, len, ac.sampleRate);
+    const w = white.getChannelData(0), b = brown.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++) {
+      const r = Math.random() * 2 - 1; w[i] = r;
+      last = (last + .02 * r) / 1.02; b[i] = last * 3.5;
+    }
+  }
+  if (ac.state === "suspended") ac.resume();
+  return ac;
+}
+function thunder(near) {                          // near: 0 far away … 1 overhead
+  const a = audio(); if (!a) return;
+  const t0 = a.currentTime + (near > .8 ? .02 : (1 - near) * (.4 + Math.random() * 1.4));
+  if (near > .5) {                                // the crack
+    const src = a.createBufferSource(); src.buffer = white;
+    const hp = a.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 500;
+    const g = a.createGain();
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.9 * near, t0 + .006);
+    g.gain.exponentialRampToValueAtTime(.001, t0 + .45);
+    src.connect(hp); hp.connect(g); g.connect(master);
+    src.start(t0, Math.random() * 3); src.stop(t0 + .5);
+  }
+  const src = a.createBufferSource(); src.buffer = brown;
+  src.playbackRate.value = .7 + Math.random() * .4;
+  const lp = a.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 160 + near * 650;
+  const g = a.createGain();
+  const peak = near > .8 ? 1 : .12 + near * .45, dur = 2.4 + near * 2.4 + Math.random() * 1.2;
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(peak, t0 + .06 + (1 - near) * .5);
+  for (let k = 1; k <= 6; k++) {                  // the roll: uneven swells as the sound comes back from far away
+    g.gain.linearRampToValueAtTime(peak * (.35 + Math.random() * .65) * (1 - k / 8), t0 + dur * k / 7);
+  }
+  g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+  src.connect(lp); lp.connect(g); g.connect(master);
+  src.start(t0, Math.random() * 2); src.stop(t0 + dur + .1);
+}
+const soundBtn = document.getElementById("sound");
+soundBtn.addEventListener("click", () => {
+  soundOn = !soundOn;
+  soundBtn.setAttribute("aria-pressed", soundOn);
+  if (soundOn) { audio(); thunder(.35); }
+});
+
+/* weather: bolts every second or two somewhere in the dark, sometimes in pairs */
 function weather() {
-  if (!leaving && !document.hidden) bolts.push(makeBolt(Math.random() * W, H * (.35 + Math.random() * .55), false));
-  setTimeout(weather, 1400 + Math.random() * 3200);
+  if (!leaving && !document.hidden) {
+    const x = Math.random() * W, y = H * (.35 + Math.random() * .55);
+    bolts.push(makeBolt(x, y, false));
+    if (Math.random() < .22) setTimeout(() => bolts.push(makeBolt(x + (Math.random() - .5) * 160, y * (.8 + Math.random() * .3), false)), 120 + Math.random() * 200);
+    if (soundOn && Math.random() < .7) thunder(.1 + Math.random() * .45);
+  }
+  setTimeout(weather, 500 + Math.random() * 1500);
 }
 if (!reduce) setTimeout(weather, 600);
 
@@ -145,17 +225,24 @@ function strike(x, y) {
   leaving = true;
   try { sessionStorage.setItem("unsaid-struck", "1"); } catch (e) { /* the mint page plays no flash-in; fine */ }
   if (reduce) { location.href = "mint.html"; return; }
+  thunder(1);
   bolts.push(makeBolt(x, y, true));
   setTimeout(() => bolts.push(makeBolt(x + (Math.random() - .5) * 30, y, true)), 90);   // the return stroke
   flash.animate([{ opacity: 0 }, { opacity: .55 }, { opacity: .08 }, { opacity: .35 }, { opacity: 0 }], { duration: 520, easing: "ease-out" });
   setTimeout(() => {
-    flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, fill: "forwards", easing: "ease-in" });
-  }, 640);
-  setTimeout(() => { location.href = "mint.html"; }, 900);
+    flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, fill: "forwards", easing: "ease-in" });
+  }, 1050);
+  setTimeout(() => { if (ac) master.gain.setTargetAtTime(0, ac.currentTime, .12); }, 1150);
+  setTimeout(() => { location.href = "mint.html"; }, 1450);
 }
-addEventListener("pointerdown", e => { if (e.button === 0 || e.pointerType !== "mouse") strike(e.clientX, e.clientY); });
+addEventListener("pointerdown", e => {
+  if (e.target.closest(".sound")) return;
+  if (e.button === 0 || e.pointerType !== "mouse") strike(e.clientX, e.clientY);
+});
 document.getElementById("hint").addEventListener("click", e => { e.preventDefault(); if (e.detail === 0) strike(W / 2, H * .62); });
-addEventListener("pageshow", e => { if (e.persisted) { leaving = false; flash.getAnimations().forEach(a => a.cancel()); } });
+addEventListener("pageshow", e => {
+  if (e.persisted) { leaving = false; flash.getAnimations().forEach(a => a.cancel()); if (ac) master.gain.value = .9; }
+});
 </script>
 </body>
 </html>
