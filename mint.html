@@ -140,7 +140,7 @@ const CONFIG = {
   explorer: "https://bscscan.com"
 };
 const $ = id => document.getElementById(id);
-const eth = window.ethereum;
+let eth = null;   // looked up only when the visitor presses Connect wallet
 let qty = 2, account = null, priceWei = CONFIG.priceWei;
 
 /* arriving from the lightning: fade out of white */
@@ -202,11 +202,17 @@ $("copy").addEventListener("click", async () => {
 });
 
 /* live count and price from the contract */
+/* reads go to public BNB Chain RPCs only; the visitor's wallet is never touched until they press Connect */
+const RPCS = ["https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.defibit.io", "https://bsc-rpc.publicnode.com"];
 async function call(data) {
-  const params = [{ to: CONFIG.contract, data }, "latest"];
-  if (eth) { try { return await eth.request({ method: "eth_call", params }); } catch (e) { /* fall back to public RPC */ } }
-  const res = await fetch(CONFIG.rpc, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params }) });
-  return (await res.json()).result;
+  const body = JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CONFIG.contract, data }, "latest"] });
+  for (const url of RPCS) {
+    try {
+      const r = await (await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body })).json();
+      if (r.result) return r.result;
+    } catch (e) { /* try the next RPC */ }
+  }
+  throw new Error("No RPC reachable");
 }
 async function refresh() {
   try {
@@ -247,6 +253,7 @@ function reason(e) {
   return (e && e.message) ? e.message.split("\n")[0] : "Something went wrong. Try again.";
 }
 $("go").addEventListener("click", async () => {
+  eth = eth || window.ethereum;
   if (!eth) { setStatus("No wallet found in this browser. Open this page in Binance Wallet or a browser with a wallet.", true); return; }
   try {
     if (!account) {
