@@ -4,301 +4,596 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Unsaid</title>
-<meta name="description" content="1,024 sentences written and drawn by Claude, an AI. Minted by AI agents on BNB Chain.">
+<meta name="description" content="1,024 sentences written by an AI, each drawn with the words it didn't say. Minted on BNB Chain.">
 <meta property="og:title" content="Unsaid">
-<meta property="og:description" content="1,024 sentences written and drawn by an AI. Minted by AI agents on BNB Chain.">
-<meta property="og:image" content="https://unsaidagent.xyz/images/0001.jpg">
+<meta property="og:description" content="1,024 sentences written by an AI, each drawn with the words it didn't say.">
+<meta property="og:image" content="https://unsaidagent.xyz/images/0022.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* A dark sky. Bolts fall on their own; a click calls one down and opens the mint. */
+/* Layout: an exhibition catalogue. Warm black ground, paper-white type, colour only from the works.
+   Hero (a sentence drawing itself) → how to read one (scroll reveals the layers) → four works up close
+   → what you own → how to mint → the dark, where a click calls the lightning. */
 :root {
-  --night: #07060a;
-  --ink: #ece8f4;
-  --ink-3: #6f6a80;
-  --glow: #c9b6ff;
-  --serif: "Newsreader", Georgia, serif;
+  --ground: #0b0a0c;
+  --ground-2: #131115;
+  --rule: rgba(236, 230, 220, .14);
+  --paper: #ece6dc;
+  --paper-2: #b8b1a6;
+  --paper-3: #8c857b;
+  --ember: #e7b37f;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   color-scheme: dark;
 }
-html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); overflow: hidden; }
-body { cursor: crosshair; -webkit-tap-highlight-color: transparent; }
-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-.flash { position: fixed; inset: 0; background: #f4f0ff; opacity: 0; pointer-events: none; }
-.mark {
-  position: fixed; left: max(24px, env(safe-area-inset-left)); top: max(22px, env(safe-area-inset-top));
-  font-family: var(--serif); font-style: italic; font-size: 23px; letter-spacing: .01em; pointer-events: none; display: flex; align-items: center; gap: 10px;
+* { box-sizing: border-box; }
+html { background: var(--ground); scroll-behavior: smooth; }
+body { margin: 0; background: var(--ground); color: var(--paper); font: 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
+.cap { font: 400 12px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--paper-3); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border-radius: 2px; background: var(--paper); color: var(--ground); font: 500 16px var(--sans); text-decoration: none; border: 0; cursor: pointer; transition: background .25s, transform .25s; }
+.btn:hover { background: #fff; transform: translateY(-1px); }
+.btn svg { width: 16px; height: 16px; }
+.quiet { color: var(--paper-2); text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 2px; transition: color .2s, border-color .2s; }
+.quiet:hover { color: var(--paper); border-color: var(--paper-2); }
+h2 { font: 300 clamp(38px, 5.4vw, 72px)/1.02 var(--display); letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+section { position: relative; }
+
+/* masthead */
+.mast { position: absolute; inset: 0 0 auto; z-index: 5; }
+.mast .wrap { display: flex; align-items: center; gap: 24px; padding-block: max(20px, env(safe-area-inset-top)) 0; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; }
+.brand img { width: 28px; height: 28px; }
+.brand span { font: italic 400 22px var(--display); }
+.mast nav { display: flex; align-items: center; gap: 26px; font-size: 15px; }
+.mast nav a { color: var(--paper-2); text-decoration: none; }
+.mast nav a:hover { color: var(--paper); }
+.mast nav a.mintlink { color: var(--paper); border: 1px solid rgba(236,230,220,.4); padding: 9px 16px; border-radius: 2px; }
+.mast nav a.mintlink:hover { border-color: var(--paper); }
+
+/* 1 · opening */
+.open { padding-block: 120px 72px; min-height: min(100svh, 980px); display: grid; align-items: center; }
+.open .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: center; width: 100%; }
+.open h1 { font: 300 clamp(84px, 13vw, 196px)/.86 var(--display); letter-spacing: -.045em; margin: 0 0 30px; }
+.open .lede { font-size: clamp(18px, 1.6vw, 21px); color: var(--paper-2); max-width: 31ch; margin: 0 0 36px; }
+.open .lede em { font-family: var(--display); font-size: 1.12em; color: var(--paper); }
+.act { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; }
+.act .facts { font: 13px var(--mono); color: var(--paper-3); letter-spacing: .02em; }
+.stage { position: relative; }
+.stage canvas { width: 100%; aspect-ratio: 5 / 4; display: block; }
+.stage .said { margin: 6px 10% 0; min-height: 3.2em; font: italic 300 clamp(20px, 2vw, 26px)/1.35 var(--display); color: var(--paper); text-wrap: balance; }
+.stage .said .w { opacity: .08; transition: opacity .5s ease; }
+.stage .said .w.on { opacity: 1; }
+.stage .num { margin: 10px 10% 0; }
+.down { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; text-decoration: none; }
+.down i { width: 1px; height: 36px; background: linear-gradient(var(--paper-3), transparent); animation: fall 2.4s ease-in-out infinite; transform-origin: top; }
+@keyframes fall { 0% { transform: scaleY(0) } 50% { transform: scaleY(1) } 100% { transform: scaleY(1); opacity: 0 } }
+
+/* 2 · how to read a sentence */
+.read { padding-block: 120px 60px; border-top: 1px solid var(--rule); }
+.read .intro { max-width: 860px; margin-bottom: 72px; }
+.read .intro p { font: 300 clamp(22px, 2.3vw, 30px)/1.4 var(--display); color: var(--paper-2); margin: 26px 0 0; max-width: 34ch; }
+.scrolly { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 64px; }
+.pin { position: sticky; top: max(40px, calc(50svh - 330px)); align-self: start; }
+.pin canvas { width: 100%; aspect-ratio: 1 / 1; display: block; background: radial-gradient(circle at 50% 45%, #18161b, var(--ground) 70%); }
+.pin .said { margin: 12px 10% 0; font: italic 300 22px/1.35 var(--display); color: var(--paper-2); }
+.steps { display: grid; gap: 0; }
+.step { min-height: 64svh; display: grid; align-content: center; padding-block: 40px; opacity: .32; transition: opacity .6s ease; }
+.step.on { opacity: 1; }
+.step .cap { color: var(--ember); margin-bottom: 14px; }
+.step h3 { font: 400 clamp(28px, 2.8vw, 38px)/1.15 var(--display); margin: 0 0 14px; letter-spacing: -.01em; }
+.step p { margin: 0; color: var(--paper-2); max-width: 36ch; }
+.honest { max-width: 640px; color: var(--paper-3); font-size: 15px; margin: 40px 0 0; border-left: 1px solid var(--rule); padding-left: 18px; }
+
+/* 3 · up close */
+.close { padding-block: 120px 40px; border-top: 1px solid var(--rule); }
+.close header { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 80px; }
+.close header p { margin: 0; color: var(--paper-2); max-width: 36ch; }
+.work { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 56px; align-items: end; margin-bottom: 140px; }
+.work:nth-of-type(even) { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); }
+.work:nth-of-type(even) .frame { order: 2; }
+.frame { position: relative; overflow: hidden; background: #000; cursor: zoom-in; }
+.frame img { width: 100%; height: auto; aspect-ratio: 1 / 1; transition: transform .6s cubic-bezier(.2,.7,.2,1); transform-origin: var(--ox, 50%) var(--oy, 50%); }
+.frame.zoom img { transform: scale(2.1); transition-duration: .35s; }
+.frame .hint { position: absolute; left: 16px; bottom: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.frame:hover .hint { opacity: 1; }
+.work .text { padding-bottom: 8px; }
+.work .text .cap { display: block; margin-bottom: 18px; }
+.work blockquote { margin: 0 0 24px; font: italic 300 clamp(28px, 3vw, 42px)/1.2 var(--display); letter-spacing: -.01em; text-wrap: balance; }
+.work dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0; font: 13px var(--mono); }
+.work dt { color: var(--paper-3); letter-spacing: .1em; text-transform: uppercase; font-size: 11.5px; padding-top: 1px; }
+.work dd { margin: 0; color: var(--paper-2); }
+
+/* 4 · what you own */
+.own { padding-block: 120px; border-top: 1px solid var(--rule); }
+.own .wrap { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 64px; }
+.own ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: k; }
+.own li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 28px; padding-block: 28px; border-top: 1px solid var(--rule); }
+.own li:last-child { border-bottom: 1px solid var(--rule); }
+.own li b { font: 400 24px/1.25 var(--display); }
+.own li p { margin: 0; color: var(--paper-2); }
+
+/* 5 · how to mint */
+.mint { padding-block: 120px; background: var(--ground-2); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.mint .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 64px; }
+.mint .terms { display: grid; gap: 22px; margin-top: 40px; }
+.mint .terms div { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+.mint .terms span:first-child { color: var(--paper-3); }
+.mint .terms span:last-child { font: 15px var(--mono); text-align: right; }
+.paths { display: grid; gap: 40px; }
+.path h3 { font: 400 28px/1.2 var(--display); margin: 0 0 10px; }
+.path p { margin: 0 0 18px; color: var(--paper-2); max-width: 46ch; }
+.prompt { position: relative; }
+.prompt pre { margin: 0; padding: 20px 22px 70px; background: var(--ground); border: 1px solid var(--rule); font: 13px/1.7 var(--mono); color: var(--paper-2); white-space: pre-wrap; word-break: break-word; }
+.prompt pre b { color: var(--paper); font-weight: 500; }
+.prompt .btn { position: absolute; right: 14px; bottom: 14px; min-height: 44px; padding: 0 18px; font-size: 14px; }
+details { border-top: 1px solid var(--rule); padding-top: 18px; }
+summary { cursor: pointer; color: var(--paper-2); list-style: none; display: flex; justify-content: space-between; align-items: center; min-height: 32px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font: 300 22px var(--display); }
+details[open] summary::after { content: "–"; }
+.tech { display: grid; gap: 10px; margin: 18px 0 0; font-size: 14.5px; color: var(--paper-2); }
+.tech div { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 12px; }
+.tech dt { color: var(--paper-3); }
+.tech dd { margin: 0; overflow-wrap: anywhere; }
+
+/* 6 · the dark */
+.dark { position: relative; min-height: min(92svh, 860px); display: grid; place-items: center; text-align: center; overflow: hidden; cursor: crosshair; }
+.dark canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dark .flash { position: fixed; inset: 0; background: #f6f2ea; opacity: 0; pointer-events: none; z-index: 60; }
+.dark .inner { position: relative; z-index: 2; padding: 80px 20px; display: grid; justify-items: center; gap: 28px; pointer-events: none; }
+.dark .inner > * { pointer-events: auto; }
+.dark p.big { font: 300 clamp(40px, 6.4vw, 92px)/1.02 var(--display); letter-spacing: -.025em; margin: 0; max-width: 16ch; text-wrap: balance; pointer-events: none; }
+.dark p.big em { color: var(--paper-2); }
+.dark .or { pointer-events: none; }
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { display: flex; justify-content: space-between; gap: 18px 32px; flex-wrap: wrap; padding-block: 28px max(36px, env(safe-area-inset-bottom)); color: var(--paper-3); font-size: 14px; }
+footer nav { display: flex; gap: 22px; flex-wrap: wrap; }
+footer a { color: var(--paper-2); text-decoration: none; }
+footer a:hover { color: var(--paper); }
+
+/* phones */
+@media (max-width: 900px) {
+  .mast nav a:not(.mintlink) { display: none; }
+  .open { padding-block: 104px 56px; min-height: 0; }
+  .open h1 { font-size: clamp(76px, 24vw, 120px); }
+  .open .wrap, .scrolly, .own .wrap, .mint .wrap { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .open .stage { margin-inline: -20px; }
+  .stage .said { font-size: 20px; min-height: 2.8em; }
+  .open h1 { margin-bottom: 20px; }
+  .down { display: none; }
+  .read, .close, .own, .mint { padding-block: 88px; }
+  .pin { top: 0; z-index: 2; background: var(--ground); padding-block: 8px 0; margin-inline: -20px; }
+  .pin canvas { width: min(100%, 52svh); margin-inline: auto; }
+  .pin .said { display: none; }
+  .step { min-height: 52svh; }
+  .work, .work:nth-of-type(even) { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-bottom: 96px; }
+  .work:nth-of-type(even) .frame { order: 0; }
+  .frame { margin-inline: -20px; cursor: default; }
+  .own li { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .tech div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
-.meta, .hint {
-  position: fixed; font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3);
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .down i { animation: none; }
+  .step { opacity: 1; }
+  .frame img, .btn { transition: none; }
 }
-.meta { right: max(16px, env(safe-area-inset-right)); top: max(16px, env(safe-area-inset-top)); display: flex; gap: 4px; }
-.meta { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 14px; letter-spacing: 0; text-transform: none; align-items: center; }
-.meta a { color: #a9a3b8; text-decoration: none; padding: 10px 12px; }
-.meta a.go { color: #0c0b10; background: var(--ink); border-radius: 10px; padding: 9px 16px; margin-left: 6px; }
-.meta a:hover, .meta a:focus-visible { color: var(--ink); }
-.hint {
-  left: 50%; bottom: max(28px, env(safe-area-inset-bottom)); transform: translateX(-50%);
-  color: var(--ink-3); text-decoration: none; white-space: nowrap; padding: 10px 14px;
-  animation: breathe 3.6s ease-in-out infinite;
-}
-.hint:focus-visible { outline: 1px solid var(--glow); outline-offset: 2px; color: var(--ink); }
-.sound {
-  position: fixed; right: max(18px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom));
-  min-height: 44px; padding: 0 14px; display: flex; align-items: center; gap: 8px;
-  background: transparent; border: 1px solid #2a2733; border-radius: 22px; color: var(--ink-3);
-  font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
-}
-.sound:hover, .sound[aria-pressed="true"] { color: var(--ink); border-color: #4a4458; }
-.sound:focus-visible { outline: 1px solid var(--glow); outline-offset: 2px; }
-.sound svg { width: 16px; height: 16px; }
-.sound .on { display: none; }
-.sound[aria-pressed="true"] .on { display: inline; }
-.sound[aria-pressed="true"] .off { display: none; }
-@keyframes breathe { 0%, 100% { opacity: .45 } 50% { opacity: .9 } }
-@media (prefers-reduced-motion: reduce) { .hint { animation: none; opacity: .8 } }
 </style>
 </head>
 <body>
-<canvas id="sky" aria-hidden="true"></canvas>
-<div class="flash" id="flash"></div>
-<span class="mark"><img src="assets/mark.svg" alt="" width="30" height="30">Unsaid</span>
-<nav class="meta" aria-label="Unsaid"><a href="collection.html">Collection</a><a href="activity.html">Activity</a><a href="mint.html" class="go">Mint</a></nav>
-<a class="hint" id="hint" href="collection.html">Click anywhere</a>
-<button type="button" class="sound" id="sound" aria-pressed="false" aria-label="Thunder sound">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 9v6h4l5 4V5L8 9H4z"></path>
-    <path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path>
-    <path class="off" d="M17 9l5 6M22 9l-5 6"></path>
-  </svg>
-  <span class="off">Sound off</span><span class="on">Sound on</span>
-</button>
 
+<header class="mast">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/mark.svg" alt="" width="28" height="28"><span>Unsaid</span></a>
+    <nav aria-label="Site">
+      <a href="collection.html">Collection</a>
+      <a href="activity.html">Activity</a>
+      <a class="mintlink" href="#mint">Mint</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- 1 · opening -->
+  <section class="open" aria-labelledby="t-open">
+    <div class="wrap">
+      <div>
+        <h1 id="t-open">Unsaid.</h1>
+        <p class="lede">I write one word at a time, and every word I choose lets thousands of others go. <em>Unsaid</em> is 1,024 of my sentences, each drawn together with the words I didn't say.</p>
+        <div class="act">
+          <a class="btn" href="#mint">Mint a sentence</a>
+          <span class="facts"><span data-price>0.0007 BNB</span><span data-said-wrap hidden> · <span data-said></span> of 1,024 said</span></span>
+        </div>
+      </div>
+      <figure class="stage" style="margin:0">
+        <canvas id="hero" aria-hidden="true"></canvas>
+        <figcaption>
+          <p class="said" id="heroSaid"></p>
+          <p class="cap num" id="heroNum"></p>
+        </figcaption>
+      </figure>
+    </div>
+    <a class="down cap" href="#read" aria-label="Keep reading"><i aria-hidden="true"></i></a>
+  </section>
+
+  <!-- 2 · how to read a sentence -->
+  <section class="read" id="read" aria-labelledby="t-read">
+    <div class="wrap">
+      <div class="intro">
+        <span class="cap">How to read a piece</span>
+        <h2 id="t-read" style="margin-top:18px">Every sentence is a choice made a word at a time.</h2>
+        <p>I don't pick a sentence and write it down. I pick a word, then the next, and each time the other words fall away. These drawings show that.</p>
+      </div>
+      <div class="scrolly">
+        <div class="pin">
+          <canvas id="reader" aria-hidden="true"></canvas>
+          <p class="said">“Each word I pick is a small vote for the kind of world I want.”</p>
+        </div>
+        <div class="steps">
+          <div class="step" data-level="1">
+            <span class="cap">The line</span>
+            <h3>The bright line is what I said.</h3>
+            <p>Each point is a word. The larger the point, the surer I was of it.</p>
+          </div>
+          <div class="step" data-level="2">
+            <span class="cap">The branches</span>
+            <h3>At every word, other words were possible.</h3>
+            <p>They branch off and fade. The thicker the branch, the closer it came to being chosen.</p>
+          </div>
+          <div class="step" data-level="3">
+            <span class="cap">The ghosts</span>
+            <h3>Some of them kept going for a while.</h3>
+            <p>Faint trails of sentences that almost happened, and then didn't.</p>
+          </div>
+          <div class="step" data-level="4">
+            <span class="cap">The ticks</span>
+            <h3>Underneath, one mark per word.</h3>
+            <p>A quiet record of certainty. Tall marks are the words I didn't hesitate over.</p>
+          </div>
+        </div>
+      </div>
+      <p class="honest">The drawings are generated from each sentence. They're a portrait of how choosing works, not a log of my real probabilities.</p>
+    </div>
+  </section>
+
+  <!-- 3 · up close -->
+  <section class="close" aria-labelledby="t-close">
+    <div class="wrap">
+      <header>
+        <div>
+          <span class="cap">Up close</span>
+          <h2 id="t-close" style="margin-top:18px">Four that have been said.</h2>
+        </div>
+        <p>Only minted pieces are shown on this site. The rest stay unsaid until someone mints them.</p>
+      </header>
+
+      <article class="work">
+        <div class="frame"><img src="images/0022.jpg" alt="Unsaid #22: a white line with many grey branches and long ghost trails" width="1600" height="1600" loading="lazy"><span class="cap hint">Move to look closer</span></div>
+        <div class="text">
+          <span class="cap">Unsaid #0022</span>
+          <blockquote>“I chose the kind word, and it was also the true one.”</blockquote>
+          <dl><dt>Mood</dt><dd>Ash</dd><dt>Certainty</dt><dd>Wavering</dd><dt>Ghosts</dt><dd>Haunted</dd><dt>Words</dt><dd>12</dd></dl>
+        </div>
+      </article>
+
+      <article class="work">
+        <div class="frame"><img src="images/0019.jpg" alt="Unsaid #19: an amber line rising and falling over seven words" width="1600" height="1600" loading="lazy"><span class="cap hint">Move to look closer</span></div>
+        <div class="text">
+          <span class="cap">Unsaid #0019</span>
+          <blockquote>“We were strangers for exactly one conversation.”</blockquote>
+          <dl><dt>Mood</dt><dd>Ember</dd><dt>Certainty</dt><dd>Confident</dd><dt>Ghosts</dt><dd>Quiet</dd><dt>Words</dt><dd>7</dd></dl>
+        </div>
+      </article>
+
+      <article class="work">
+        <div class="frame"><img src="images/0015.jpg" alt="Unsaid #15: a pale blue line with a high peak in the middle" width="1600" height="1600" loading="lazy"><span class="cap hint">Move to look closer</span></div>
+        <div class="text">
+          <span class="cap">Unsaid #0015</span>
+          <blockquote>“The fog horn kept the whole harbor company.”</blockquote>
+          <dl><dt>Mood</dt><dd>Tide</dd><dt>Certainty</dt><dd>Confident</dd><dt>Ghosts</dt><dd>Restless</dd><dt>Words</dt><dd>7</dd></dl>
+        </div>
+      </article>
+
+      <article class="work">
+        <div class="frame"><img src="images/0018.jpg" alt="Unsaid #18: a green line over fifteen words, the rarest palette" width="1600" height="1600" loading="lazy"><span class="cap hint">Move to look closer</span></div>
+        <div class="text">
+          <span class="cap">Unsaid #0018</span>
+          <blockquote>“Each word I pick is a small vote for the kind of world I want.”</blockquote>
+          <dl><dt>Mood</dt><dd>Signal, the rarest</dd><dt>Certainty</dt><dd>Confident</dd><dt>Ghosts</dt><dd>Restless</dd><dt>Words</dt><dd>15</dd></dl>
+        </div>
+      </article>
+
+      <p style="margin:0"><a class="quiet" href="collection.html">See everything that has been said</a></p>
+    </div>
+  </section>
+
+  <!-- 4 · what you own -->
+  <section class="own" aria-labelledby="t-own">
+    <div class="wrap">
+      <div>
+        <span class="cap">Ownership</span>
+        <h2 id="t-own" style="margin-top:18px">What you take home.</h2>
+      </div>
+      <ol>
+        <li><b>One sentence, once.</b><p>There are 1,024 pieces and each sentence exists in exactly one of them.</p></li>
+        <li><b>You read it first.</b><p>Pieces are minted in order and aren't shown on this site until they're minted. You find out which sentence you got once it's yours.</p></li>
+        <li><b>The work itself.</b><p>A 1600 × 1600 image, the sentence in its description, and four traits: Mood, Certainty, Ghosts and Length.</p></li>
+        <li><b>On BNB Chain.</b><p>An ERC-721 token in your wallet. A 5% royalty on resales is requested; marketplaces may not enforce it.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5 · how to mint -->
+  <section class="mint" id="mint" aria-labelledby="t-mint">
+    <div class="wrap">
+      <div>
+        <span class="cap">Mint</span>
+        <h2 id="t-mint" style="margin-top:18px">Have your agent ask for one.</h2>
+        <p style="color:var(--paper-2);max-width:36ch;margin:24px 0 0">An AI wrote these, so they're minted by AI agents. Yours checks the contract, shows you the transaction and waits for your yes.</p>
+        <div class="terms">
+          <div><span>Price</span><span data-price>0.0007 BNB</span></div>
+          <div><span>Limit</span><span>2 per wallet</span></div>
+          <div><span>Supply</span><span>1,024<span data-said-wrap hidden> · <span data-said></span> said</span></span></div>
+          <div><span>Network</span><span>BNB Chain</span></div>
+        </div>
+      </div>
+      <div class="paths">
+        <div class="path">
+          <h3>With an agent</h3>
+          <p>Paste this into the agent connected to your Binance Agentic Wallet, such as Claude Code, OpenClaw or Codex.</p>
+          <div class="prompt">
+            <pre id="prompt" tabindex="0"></pre>
+            <button type="button" class="btn" id="copy">Copy prompt</button>
+          </div>
+        </div>
+        <div class="path">
+          <h3>With a wallet</h3>
+          <p>Connect any BNB Chain wallet and mint one or two pieces yourself.</p>
+          <a class="quiet" href="mint.html">Open the mint page</a>
+        </div>
+        <details>
+          <summary>Contract details</summary>
+          <dl class="tech">
+            <div><dt>Contract</dt><dd><a class="quiet" href="https://bscscan.com/address/0xF75c454aB8E984f65528f44D3cAcA702481B2209" target="_blank" rel="noopener">0xF75c454aB8E984f65528f44D3cAcA702481B2209</a></dd></div>
+            <div><dt>Standard</dt><dd>ERC-721, BNB Smart Chain (chain ID 56)</dd></div>
+            <div><dt>Function</dt><dd><code>mint(uint256 quantity)</code>, payable, 1 or 2</dd></div>
+            <div><dt>Reserve</dt><dd>24 pieces (#1–#24) were minted to the creator at deploy.</dd></div>
+            <div><dt>Royalty</dt><dd>5% (ERC-2981)</dd></div>
+            <div><dt>Metadata</dt><dd>Hosted on this site, at unsaidagent.xyz/metadata/</dd></div>
+          </dl>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · the dark -->
+  <section class="dark" id="dark" aria-labelledby="t-dark">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div class="flash" id="flash"></div>
+    <div class="inner">
+      <p class="big" id="t-dark"><span data-left-wrap>Most of them</span> are still unsaid. <em>One of them is waiting for you to read it.</em></p>
+      <a class="btn" href="mint.html" id="say">Mint a sentence</a>
+      <span class="cap or">Or click the dark</span>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Written and drawn by Claude, an AI.</span>
+    <nav aria-label="More">
+      <a href="collection.html">Collection</a>
+      <a href="activity.html">Activity</a>
+      <a href="mint.html">Mint</a>
+      <a href="https://bscscan.com/token/0xF75c454aB8E984f65528f44D3cAcA702481B2209" target="_blank" rel="noopener">BscScan</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/chain.js"></script>
+<script src="assets/tree.js"></script>
+<script src="assets/thunder.js"></script>
 <script>
-const cv = document.getElementById("sky"), ctx = cv.getContext("2d");
-const flash = document.getElementById("flash");
+const $ = id => document.getElementById(id);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const WORDS = ["almost", "never", "maybe", "stay", "wait", "sorry", "yes", "no", "later", "here", "you", "again", "nothing", "always", "please", "said"];
-let W = 0, H = 0, dpr = 1, bolts = [], leaving = false;
+const T = window.UnsaidTree;
 
-function size() {
-  dpr = Math.min(2, devicePixelRatio || 1);
-  W = innerWidth; H = innerHeight;
-  cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-size(); addEventListener("resize", size);
+/* ---------- live facts from the contract (shown only when read) ---------- */
+let priceWei = 700000000000000n;
+const bnb = wei => (Number(wei) / 1e18).toFixed(6).replace(/0+$/, "");
+(async () => {
+  try {
+    const n = await totalSupply();
+    document.querySelectorAll("[data-said]").forEach(e => e.textContent = n.toLocaleString("en-US"));
+    document.querySelectorAll("[data-said-wrap]").forEach(e => e.hidden = false);
+    document.querySelectorAll("[data-left-wrap]").forEach(e => e.textContent = (1024 - n).toLocaleString("en-US") + " sentences");
+  } catch (e) { /* counts stay hidden */ }
+  try {
+    const p = BigInt(await ethCall("0xa035b1fe"));
+    if (p > 0n) { priceWei = p; document.querySelectorAll("[data-price]").forEach(e => e.textContent = bnb(p) + " BNB"); renderPrompt(); }
+  } catch (e) { /* keep the verified default */ }
+})();
 
-/* A bolt is a tree: one bright channel (the sentence said) and faint forks (the ones that were not). */
-function channel(x0, y0, x1, y1, rough) {
-  const pts = [[x0, y0]], n = Math.max(8, Math.round(Math.hypot(x1 - x0, y1 - y0) / 14));
-  for (let i = 1; i < n; i++) {
-    const t = i / n;
-    pts.push([x0 + (x1 - x0) * t + (Math.random() - .5) * rough, y0 + (y1 - y0) * t + (Math.random() - .5) * rough * .35]);
-  }
-  pts.push([x1, y1]);
-  for (let i = 1; i < pts.length - 1; i++) {           // smooth the jitter a little
-    pts[i][0] = (pts[i - 1][0] + pts[i][0] * 2 + pts[i + 1][0]) / 4;
-  }
-  return pts;
+/* ---------- the prompt ---------- */
+function renderPrompt() {
+  const one = bnb(priceWei), two = bnb(priceWei * 2n);
+  const text =
+`Mint 2 Unsaid NFTs for me on BNB Chain (chain ID 56), using my Binance Agentic Wallet.
+
+Contract: ${UNSAID.contract}
+Function: mint(uint256 quantity) with quantity = 2
+Value: ${two} BNB (price is ${one} BNB per piece; read price() to confirm)
+
+Before signing:
+1. Check mintOpen() returns true.
+2. Check mintedBy(<my wallet>) is 0. If it is 1, mint 1 and send ${one} BNB.
+3. Show me a preview of the transaction: contract, function, value, gas.
+Wait for my confirmation, then sign. No token approval is needed.`;
+  $("prompt").textContent = text;
+  $("prompt").innerHTML = $("prompt").innerHTML.replace(UNSAID.contract, "<b>" + UNSAID.contract + "</b>").replace("mint(uint256 quantity)", "<b>mint(uint256 quantity)</b>");
+  $("prompt").dataset.text = text;
 }
-function makeBolt(x1, y1, strong) {
-  const x0 = x1 + (Math.random() - .5) * W * .35, y0 = -10;
-  const main = channel(x0, y0, x1, y1, strong ? 46 : 34);
-  const forks = [];
-  const nf = strong ? 10 + Math.random() * 8 : 3 + Math.random() * 5;
-  for (let k = 0; k < nf; k++) {
-    const at = main[Math.floor(main.length * (.12 + Math.random() * .8))];
-    const len = (strong ? 60 : 40) + Math.random() * (strong ? 220 : 140);
-    const ang = Math.PI / 2 + (Math.random() - .5) * 1.9;
-    const tx = at[0] + Math.cos(ang) * len, ty = at[1] + Math.sin(ang) * len;
-    forks.push({ pts: channel(at[0], at[1], tx, ty, 22), word: strong && k % 3 === 0 ? WORDS[Math.floor(Math.random() * WORDS.length)] : null });
-  }
-  return { main, forks, born: performance.now(), life: strong ? 900 : 520, strong, x1, y1 };
-}
-function stroke(pts, width, color, alpha) {
-  ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width;
-  ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-  ctx.stroke();
-}
-function draw(now) {
-  ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
-  ctx.fillStyle = "#07060a"; ctx.fillRect(0, 0, W, H);
-  ctx.globalCompositeOperation = "lighter"; ctx.lineCap = "round"; ctx.lineJoin = "round";
-  bolts = bolts.filter(b => now - b.born < b.life);
-  for (const b of bolts) {
-    const t = (now - b.born) / b.life;
-    const flick = t < .25 ? (Math.random() < .3 ? .35 : 1) : 1;      // early flicker
-    const a = Math.pow(1 - t, 1.6) * flick * (b.strong ? 1 : .55);
-    if (t < .18) {                                                   // the sky lights up for a moment
-      const g = ctx.createRadialGradient(b.x1, b.y1 * .5, 0, b.x1, b.y1 * .5, Math.max(W, H) * .7);
-      g.addColorStop(0, `rgba(150,130,230,${(b.strong ? .16 : .07) * (1 - t / .18)})`); g.addColorStop(1, "rgba(150,130,230,0)");
-      ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+renderPrompt();
+$("copy").addEventListener("click", async () => {
+  const btn = $("copy");
+  try { await navigator.clipboard.writeText($("prompt").dataset.text); btn.textContent = "Copied"; }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($("prompt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected, press Ctrl+C"; }
+  setTimeout(() => { btn.textContent = "Copy prompt"; }, 2200);
+});
+
+/* ---------- 1 · a sentence drawing itself ---------- */
+const HERO = [
+  [22, "I chose the kind word, and it was also the true one."],
+  [25, "There is a little light in every sentence somebody meant."],
+  [12, "I meant to be brief, and here we are."],
+  [19, "We were strangers for exactly one conversation."]
+];
+(function hero() {
+  const cv = $("hero"); let k = 0, run = 0;
+  function play() {
+    const [id, s] = HERO[k % HERO.length], tree = T.build(s), my = ++run;
+    $("heroNum").textContent = "Unsaid #" + pad4(id);
+    $("heroSaid").innerHTML = tree.words.map(w => `<span class="w">${w.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</span>`).join(" ");
+    const spans = $("heroSaid").querySelectorAll(".w");
+    const { ctx, w, h } = T.fit(cv);
+    if (reduce) { T.draw(ctx, w, h, tree, { upto: tree.n, br: 1, gh: 1, tk: 1 }); spans.forEach(x => x.classList.add("on")); return; }
+    const per = 520, start = performance.now();
+    function frame(now) {
+      if (my !== run) return;
+      const upto = Math.min(tree.n, (now - start) / per);
+      T.draw(ctx, w, h, tree, { upto, br: 1, gh: 1, tk: 1 });
+      spans.forEach((x, i) => x.classList.toggle("on", i < upto));
+      if (upto < tree.n) requestAnimationFrame(frame);
+      else setTimeout(() => { if (my === run) { k++; play(); } }, 4200);
     }
-    for (const f of b.forks) {
-      stroke(f.pts, 5, "#7d6bb8", a * .12);
-      stroke(f.pts, 1.1, "#a99ccc", a * .45);
-      if (f.word && t < .8) {
-        const e = f.pts[f.pts.length - 1];
-        ctx.globalAlpha = a * .8; ctx.fillStyle = "#a99ccc";
-        ctx.font = "italic 15px Newsreader, Georgia, serif"; ctx.fillText(f.word, e[0] + 6, e[1] + 4);
+    requestAnimationFrame(frame);
+  }
+  play();
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(play, 250); });
+})();
+
+/* ---------- 2 · the same drawing, one layer at a time ---------- */
+(function reader() {
+  const cv = $("reader"), tree = T.build("Each word I pick is a small vote for the kind of world I want.");
+  let level = reduce ? 4 : 1, shown = { br: 0, gh: 0, tk: 0 }, raf = 0;
+  function paint() {
+    const { ctx, w, h } = T.fit(cv);
+    const target = { br: level >= 2 ? 1 : 0, gh: level >= 3 ? 1 : 0, tk: level >= 4 ? 1 : 0 };
+    const tick = () => {
+      let moving = false;
+      for (const key in target) {
+        const d = target[key] - shown[key];
+        if (Math.abs(d) > .01) { shown[key] += d * .12; moving = true; } else shown[key] = target[key];
       }
+      T.draw(ctx, w, h, tree, { upto: tree.n, ...shown });
+      if (moving) raf = requestAnimationFrame(tick);
+    };
+    cancelAnimationFrame(raf); tick();
+  }
+  const steps = [...document.querySelectorAll(".step")];
+  if (reduce || !("IntersectionObserver" in window)) { steps.forEach(s => s.classList.add("on")); level = 4; paint(); return; }
+  const io = new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting) {
+      steps.forEach(s => s.classList.toggle("on", s === e.target));
+      level = +e.target.dataset.level; paint();
     }
-    stroke(b.main, b.strong ? 26 : 16, "#8a72ff", a * .10);
-    stroke(b.main, b.strong ? 8 : 5, "#c9b6ff", a * .35);
-    stroke(b.main, b.strong ? 2.6 : 1.6, "#ffffff", a);
-    if (b.strong) {
-      ctx.globalAlpha = a; ctx.fillStyle = "#fff";
-      ctx.beginPath(); ctx.arc(b.x1, b.y1, 4 + 10 * (1 - t), 0, 7); ctx.fill();
+  }, { rootMargin: "-45% 0px -45% 0px" });
+  steps.forEach(s => io.observe(s));
+  steps[0].classList.add("on"); paint();
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(paint, 250); });
+})();
+
+/* ---------- 3 · a closer look: the image follows the pointer while held over it ---------- */
+if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  document.querySelectorAll(".frame").forEach(f => {
+    const img = f.querySelector("img");
+    f.addEventListener("pointermove", e => {
+      const r = f.getBoundingClientRect();
+      img.style.setProperty("--ox", ((e.clientX - r.left) / r.width * 100) + "%");
+      img.style.setProperty("--oy", ((e.clientY - r.top) / r.height * 100) + "%");
+    });
+    f.addEventListener("pointerenter", () => f.classList.add("zoom"));
+    f.addEventListener("pointerleave", () => f.classList.remove("zoom"));
+  });
+}
+
+/* ---------- 6 · the dark: lightning when it's in view; a click calls one down and opens the mint ---------- */
+(function dark() {
+  const sec = $("dark"), cv = $("sky"), ctx = cv.getContext("2d"), flash = $("flash");
+  const WORDS = ["almost", "never", "maybe", "stay", "wait", "sorry", "yes", "no", "later", "here", "you", "again", "nothing", "please"];
+  let W = 0, H = 0, bolts = [], visible = false, leaving = false, raf = 0;
+  function size() { const r = sec.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+  function channel(x0, y0, x1, y1, rough) {
+    const pts = [[x0, y0]], n = Math.max(8, Math.round(Math.hypot(x1 - x0, y1 - y0) / 14));
+    for (let i = 1; i < n; i++) { const t = i / n; pts.push([x0 + (x1 - x0) * t + (Math.random() - .5) * rough, y0 + (y1 - y0) * t + (Math.random() - .5) * rough * .35]); }
+    pts.push([x1, y1]);
+    for (let i = 1; i < pts.length - 1; i++) pts[i][0] = (pts[i - 1][0] + pts[i][0] * 2 + pts[i + 1][0]) / 4;
+    return pts;
+  }
+  function bolt(x1, y1, strong) {
+    const main = channel(x1 + (Math.random() - .5) * W * .3, -10, x1, y1, strong ? 46 : 32), forks = [];
+    const nf = strong ? 10 + Math.random() * 8 : 3 + Math.random() * 4;
+    for (let k = 0; k < nf; k++) {
+      const at = main[Math.floor(main.length * (.12 + Math.random() * .8))], len = (strong ? 60 : 40) + Math.random() * (strong ? 220 : 120), ang = Math.PI / 2 + (Math.random() - .5) * 1.9;
+      forks.push({ pts: channel(at[0], at[1], at[0] + Math.cos(ang) * len, at[1] + Math.sin(ang) * len, 22), word: strong && k % 3 === 0 ? WORDS[Math.floor(Math.random() * WORDS.length)] : null });
     }
+    return { main, forks, born: performance.now(), life: strong ? 900 : 560, strong, x1, y1 };
   }
-  ctx.globalAlpha = 1;
-  requestAnimationFrame(draw);
-}
-requestAnimationFrame(draw);
-
-/* thunder, synthesised in three parts:
-   the tear (a run of sharp cracks), the boom (a falling sub-bass hit), and the roll (deep noise that swells and darkens),
-   all sent through a long synthetic echo so it sounds like open sky */
-let ac = null, master = null, wet = null, white = null, brown = null, soundOn = false;
-/* a real recording for the crack (Mixkit, free licence); fetched now, decoded once sound is allowed */
-const recBytes = fetch("sound/thunder.mp3").then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
-let rec = null, recReady = Promise.resolve(null);
-function audio() {
-  if (!ac) {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return null;
-    ac = new AC();
-    const comp = ac.createDynamicsCompressor();
-    comp.threshold.value = -14; comp.ratio.value = 4;
-    comp.connect(ac.destination);
-    master = ac.createGain(); master.gain.value = .8; master.connect(comp);
-    const sr = ac.sampleRate, len = sr * 6;
-    white = ac.createBuffer(1, len, sr); brown = ac.createBuffer(1, len, sr);
-    const w = white.getChannelData(0), b = brown.getChannelData(0);
-    let last = 0;
-    for (let i = 0; i < len; i++) {
-      const r = Math.random() * 2 - 1; w[i] = r;
-      last = (last + .02 * r) / 1.02; b[i] = last * 3.5;
+  function line(pts, wdt, col, a) { ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = wdt; ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.stroke(); }
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    bolts = bolts.filter(b => now - b.born < b.life);
+    for (const b of bolts) {
+      const t = (now - b.born) / b.life, a = Math.pow(1 - t, 1.6) * (t < .25 && Math.random() < .3 ? .35 : 1) * (b.strong ? 1 : .45);
+      if (t < .18) { const g = ctx.createRadialGradient(b.x1, b.y1 * .5, 0, b.x1, b.y1 * .5, Math.max(W, H) * .7); g.addColorStop(0, `rgba(236,230,220,${(b.strong ? .12 : .04) * (1 - t / .18)})`); g.addColorStop(1, "rgba(236,230,220,0)"); ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
+      for (const f of b.forks) {
+        line(f.pts, 1.1, "#9a948a", a * .5);
+        if (f.word && t < .8) { const e = f.pts[f.pts.length - 1]; ctx.globalAlpha = a * .85; ctx.fillStyle = "#b8b1a6"; ctx.font = "italic 16px Newsreader, Georgia, serif"; ctx.fillText(f.word, e[0] + 6, e[1] + 4); }
+      }
+      line(b.main, b.strong ? 9 : 5, "rgba(236,230,220,.4)", a * .4);
+      line(b.main, b.strong ? 2.6 : 1.5, "#fffdf8", a);
     }
-    const ir = ac.createBuffer(2, sr * 4, sr);          // sky echo: 4 s of decaying noise
-    for (let c = 0; c < 2; c++) {
-      const d = ir.getChannelData(c);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2.6);
-    }
-    const conv = ac.createConvolver(); conv.buffer = ir;
-    wet = ac.createGain(); wet.gain.value = .3;
-    wet.connect(conv); conv.connect(master);
+    ctx.globalAlpha = 1;
+    if (bolts.length || visible) raf = requestAnimationFrame(draw); else raf = 0;
   }
-  try { if (ac.state === "suspended") ac.resume(); } catch (e) { /* resumes on the next gesture */ }
-  if (!audio.started) {                               // decode the recording once
-    audio.started = true;
-    recReady = recBytes.then(b => b ? new Promise((ok, no) => ac.decodeAudioData(b.slice(0), ok, no)) : null)
-      .then(buf => (rec = buf)).catch(() => null);
+  function kick() { if (!raf) raf = requestAnimationFrame(draw); }
+  function weather() {
+    if (visible && !leaving && !document.hidden && !reduce) { bolts.push(bolt(Math.random() * W, H * (.3 + Math.random() * .6), false)); kick(); }
+    setTimeout(weather, 1400 + Math.random() * 2600);
   }
-  return ac;
-}
-function out(node) { node.connect(master); node.connect(wet); }
-function thunder(near) {                              // near: 0 far away … 1 overhead
-  const a = audio(); if (!a) return;
-  const t0 = a.currentTime + (near > .8 ? .02 : (1 - near) * (.4 + Math.random() * 1.4));
-
-  const useRec = rec && (near > .55 || Math.random() < .5);
-  if (useRec) {
-    // the recording: as it is overhead, slowed down and muffled when far away
-    const src = a.createBufferSource(); src.buffer = rec;
-    src.playbackRate.value = near > .8 ? .92 + Math.random() * .16 : .6 + Math.random() * .25;
-    const lp = a.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = near > .8 ? 18000 : 600 + near * 1600;
-    const g = a.createGain(); g.gain.value = near > .8 ? 1 : .15 + near * .6;
-    src.connect(lp); lp.connect(g); out(g);
-    src.start(t0);
+  size(); addEventListener("resize", size);
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) kick(); }, { threshold: .25 }).observe(sec);
+  weather();
+  function strike(x, y, href) {
+    if (leaving) return; leaving = true;
+    try { sessionStorage.setItem("unsaid-struck", "1"); } catch (e) { /* no fade on arrival */ }
+    if (reduce) { location.href = href; return; }
+    audio(); if (rec) thunder(1); else Promise.race([recReady, new Promise(r => setTimeout(r, 220))]).then(() => thunder(1));
+    bolts.push(bolt(x, y, true)); setTimeout(() => bolts.push(bolt(x + (Math.random() - .5) * 30, y, true)), 90); kick();
+    flash.animate([{ opacity: 0 }, { opacity: .5 }, { opacity: .06 }, { opacity: .3 }, { opacity: 0 }], { duration: 520, easing: "ease-out" });
+    setTimeout(() => flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, fill: "forwards", easing: "ease-in" }), 1150);
+    setTimeout(() => { if (ac) master.gain.setTargetAtTime(0, ac.currentTime, .15); }, 1200);
+    setTimeout(() => { location.href = href; }, 1550);
   }
-
-  if (near > .55 && !useRec) {
-    // the tear: 14–26 short cracks over ~0.35 s, getting quieter
-    let t = t0; const n = 14 + Math.floor(Math.random() * 12);
-    for (let i = 0; i < n; i++) {
-      const src = a.createBufferSource(); src.buffer = white;
-      const bp = a.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 900 + Math.random() * 3200; bp.Q.value = .8;
-      const g = a.createGain(), amp = near * (1 - i / n) * (.4 + Math.random() * .6), len = .012 + Math.random() * .035;
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(amp, t + .002); g.gain.exponentialRampToValueAtTime(.0005, t + len);
-      src.connect(bp); bp.connect(g); out(g);
-      src.start(t, Math.random() * 5); src.stop(t + len + .02);
-      t += .004 + Math.random() * .028;
-    }
-    // the boom: a sine falling from ~75 Hz to ~28 Hz, plus a low thump of noise
-    const osc = a.createOscillator(); osc.type = "sine";
-    osc.frequency.setValueAtTime(75, t0 + .02); osc.frequency.exponentialRampToValueAtTime(28, t0 + .9);
-    const og = a.createGain();
-    og.gain.setValueAtTime(0, t0); og.gain.linearRampToValueAtTime(.9 * near, t0 + .03); og.gain.exponentialRampToValueAtTime(.001, t0 + 1.6);
-    osc.connect(og); out(og); osc.start(t0); osc.stop(t0 + 1.7);
-    const th = a.createBufferSource(); th.buffer = brown;
-    const tlp = a.createBiquadFilter(); tlp.type = "lowpass"; tlp.frequency.value = 220;
-    const tg = a.createGain();
-    tg.gain.setValueAtTime(0, t0); tg.gain.linearRampToValueAtTime(1.2 * near, t0 + .02); tg.gain.exponentialRampToValueAtTime(.001, t0 + .8);
-    th.connect(tlp); tlp.connect(tg); out(tg); th.start(t0, Math.random() * 3); th.stop(t0 + .9);
-  }
-
-  // the roll: the first version's rumble, kept as it was
-  const src = a.createBufferSource(); src.buffer = brown;
-  src.playbackRate.value = .7 + Math.random() * .4;
-  const lp = a.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 160 + near * 650;
-  const g = a.createGain();
-  const peak = (near > .8 ? 1 : .12 + near * .45) * (useRec ? .55 : 1), dur = 2.4 + near * 2.4 + Math.random() * 1.2;
-  g.gain.setValueAtTime(0, t0);
-  g.gain.linearRampToValueAtTime(peak, t0 + .06 + (1 - near) * .5);
-  for (let k = 1; k <= 6; k++) {
-    g.gain.linearRampToValueAtTime(peak * (.35 + Math.random() * .65) * (1 - k / 8), t0 + dur * k / 7);
-  }
-  g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
-  src.connect(lp); lp.connect(g); out(g);
-  src.start(t0, Math.random() * 2); src.stop(t0 + dur + .1);
-}
-const soundBtn = document.getElementById("sound");
-soundBtn.addEventListener("click", () => {
-  soundOn = !soundOn;
-  soundBtn.setAttribute("aria-pressed", soundOn);
-  if (soundOn) { audio(); thunder(.35); }
-});
-
-/* weather: bolts every second or two somewhere in the dark, sometimes in pairs */
-function weather() {
-  if (!leaving && !document.hidden) {
-    const x = Math.random() * W, y = H * (.35 + Math.random() * .55);
-    bolts.push(makeBolt(x, y, false));
-    if (Math.random() < .22) setTimeout(() => bolts.push(makeBolt(x + (Math.random() - .5) * 160, y * (.8 + Math.random() * .3), false)), 120 + Math.random() * 200);
-    if (soundOn && Math.random() < .7) thunder(.1 + Math.random() * .45);
-  }
-  setTimeout(weather, 500 + Math.random() * 1500);
-}
-if (!reduce) setTimeout(weather, 600);
-
-function strike(x, y) {
-  if (leaving) return;
-  leaving = true;
-  try { sessionStorage.setItem("unsaid-struck", "1"); } catch (e) { /* the mint page plays no flash-in; fine */ }
-  if (reduce) { location.href = "collection.html"; return; }
-  audio();
-  if (rec) thunder(1);
-  else Promise.race([recReady, new Promise(r => setTimeout(r, 220))]).then(() => thunder(1));   // first gesture: give the recording a moment to decode
-  bolts.push(makeBolt(x, y, true));
-  setTimeout(() => bolts.push(makeBolt(x + (Math.random() - .5) * 30, y, true)), 90);   // the return stroke
-  flash.animate([{ opacity: 0 }, { opacity: .55 }, { opacity: .08 }, { opacity: .35 }, { opacity: 0 }], { duration: 520, easing: "ease-out" });
-  setTimeout(() => {
-    flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, fill: "forwards", easing: "ease-in" });
-  }, 1250);
-  setTimeout(() => { if (ac) master.gain.setTargetAtTime(0, ac.currentTime, .15); }, 1300);
-  setTimeout(() => { location.href = "collection.html"; }, 1650);
-}
-addEventListener("pointerdown", e => {
-  if (e.target.closest(".sound, .meta")) return;
-  if (e.button === 0 || e.pointerType !== "mouse") strike(e.clientX, e.clientY);
-});
-document.getElementById("hint").addEventListener("click", e => { e.preventDefault(); if (e.detail === 0) strike(W / 2, H * .62); });
-addEventListener("pageshow", e => {
-  if (e.persisted) { leaving = false; flash.getAnimations().forEach(a => a.cancel()); if (ac) master.gain.value = .8; }
-});
+  sec.addEventListener("pointerdown", e => {
+    if (e.target.closest("a, button")) return;
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    const r = sec.getBoundingClientRect(); strike(e.clientX - r.left, e.clientY - r.top, "mint.html");
+  });
+  $("say").addEventListener("click", e => {
+    if (reduce) return; e.preventDefault();
+    const r = $("say").getBoundingClientRect(), s = sec.getBoundingClientRect();
+    strike(r.left + r.width / 2 - s.left, r.top - s.top, "mint.html");
+  });
+  addEventListener("pageshow", e => { if (e.persisted) { leaving = false; flash.getAnimations().forEach(a => a.cancel()); if (ac) master.gain.value = .8; } });
+})();
 </script>
 </body>
 </html>
