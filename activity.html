@@ -15,10 +15,10 @@
 /* A line of thesis, three numbers, then the ledger: newest mint first, refreshed while you watch. */
 .head { padding-block: 36px 10px; display: grid; gap: 12px; }
 .head h1 { margin: 0; font-family: var(--serif); font-weight: 300; font-size: clamp(32px, 5vw, 60px); line-height: 1.05; letter-spacing: -.02em; max-width: 24ch; text-wrap: balance; }
-.head h1 em { color: var(--glow); text-shadow: 0 0 24px rgba(201,182,255,.3); }
+.head h1 em { color: var(--ink-2); }
 .head p { margin: 0; color: var(--ink-2); }
 .live { display: inline-flex; align-items: center; gap: 8px; }
-.live i { width: 8px; height: 8px; border-radius: 50%; background: #7dffb0; box-shadow: 0 0 10px #7dffb0; animation: pulse 2s ease-in-out infinite; }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--ember); animation: pulse 2s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: .35 } }
 
 .stats { display: flex; gap: 32px; flex-wrap: wrap; padding-block: 24px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-variant-numeric: tabular-nums; }
@@ -33,10 +33,21 @@ td.mono, td .mono { font-family: var(--mono); font-size: 13px; font-variant-nume
 .piece img { width: 52px; height: 52px; border-radius: 3px; border: 1px solid var(--line); flex: none; }
 .piece b { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .08em; display: block; }
 .piece span { font-family: var(--serif); font-style: italic; color: var(--ink-2); display: block; max-width: 44ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); border: 1px solid var(--line); border-radius: 10px; padding: 2px 8px; margin-left: 6px; }
+.tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); border: 1px solid var(--line); border-radius: 2px; padding: 2px 8px; margin-left: 6px; }
 tr.new td { animation: arrive 2.4s ease-out; }
-@keyframes arrive { from { background: rgba(201,182,255,.16) } to { background: transparent } }
+@keyframes arrive { from { background: rgba(231,179,127,.14) } to { background: transparent } }
 .state { padding: 28px 12px; color: var(--ink-3); }
+.piece .tag { display: inline-block; max-width: none; font-family: var(--mono); font-style: normal; font-size: 10.5px; color: var(--ink-3); white-space: nowrap; vertical-align: 1px; }
+@media (max-width: 640px) {
+  table { min-width: 0; }
+  th:nth-child(4), td:nth-child(4) { display: none; }
+  th, td { padding-inline: 6px; }
+  .piece { gap: 10px; }
+  .piece img { width: 44px; height: 44px; }
+  .piece span { max-width: 22ch; }
+  td.mono { white-space: nowrap; font-size: 12px; }
+  th { font-size: 10px; letter-spacing: .1em; }
+}
 @media (prefers-reduced-motion: reduce) { .live i, tr.new td { animation: none; } }
 </style>
 </head>

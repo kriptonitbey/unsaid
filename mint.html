@@ -14,14 +14,15 @@
 <style>
 /* One narrow column: a piece and its sentence, the count, the prompt. Nothing else. */
 :root {
-  --night: #0c0b10;
-  --night-2: #15131c;
-  --well: #08070c;
-  --line: #2a2733;
-  --ink: #ece8f4;
-  --ink-2: #a9a3b8;
-  --ink-3: #7d7790;
-  --glow: #c9b6ff;
+  --night: #0b0a0c;
+  --night-2: #131115;
+  --well: #08070a;
+  --line: rgba(236,230,220,.14);
+  --ink: #ece6dc;
+  --ink-2: #b8b1a6;
+  --ink-3: #8c857b;
+  --glow: #ece6dc;
+  --ember: #e7b37f;
   --warn: #ffb36b;
   --serif: "Newsreader", Georgia, serif;
   --sans: "IBM Plex Sans", system-ui, sans-serif;
@@ -34,7 +35,7 @@ body {
   font-family: var(--sans); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased;
 }
 a { color: var(--glow); text-underline-offset: 3px; }
-:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 .col {
   max-width: 560px; margin: 0 auto; display: grid; gap: 22px;
   padding-block: 12px 48px;
@@ -52,12 +53,12 @@ a { color: var(--glow); text-underline-offset: 3px; }
 .count .row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .count b { font-size: 22px; font-weight: 500; }
 .bar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
-.bar i { display: block; height: 100%; width: 2.5%; background: var(--glow); box-shadow: 0 0 10px var(--glow); transition: width .6s ease; }
+.bar i { display: block; height: 100%; width: 2.5%; background: var(--ink); transition: width .6s ease; }
 
 .ask { display: grid; gap: 10px; }
 .ask-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.copy { flex: none; white-space: nowrap; min-height: 44px; padding: 0 18px; border: 0; border-radius: 4px; background: var(--ink); color: var(--night); font: 500 14px var(--sans); cursor: pointer; transition: background .2s; }
-.copy:hover { background: var(--glow); }
+.copy { flex: none; white-space: nowrap; min-height: 44px; padding: 0 18px; border: 0; border-radius: 2px; background: var(--ink); color: var(--night); font: 500 14px var(--sans); cursor: pointer; transition: background .2s; }
+.copy:hover { background: #fff; }
 pre { margin: 0; padding: 14px 16px; background: var(--well); border: 1px solid var(--line); border-radius: 4px; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: var(--ink-2); white-space: pre-wrap; word-break: break-word; }
 pre b { color: var(--ink); font-weight: 500; }
 .hint { margin: 0; font-size: 13.5px; color: var(--ink-3); }
@@ -80,7 +81,7 @@ summary { cursor: pointer; color: var(--ink-2); font-size: 14px; min-height: 32p
 .facts span:last-child { color: var(--ink-2); text-align: right; min-width: 0; overflow-wrap: anywhere; font-family: var(--mono); font-size: 12.5px; }
 footer { font-family: var(--serif); font-style: italic; color: var(--ink-3); font-size: 15px; padding-top: 8px; }
 
-.in { position: fixed; inset: 0; background: #f4f0ff; pointer-events: none; opacity: 0; }
+.in { position: fixed; inset: 0; background: #f6f2ea; pointer-events: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
 </style>
 </head>
