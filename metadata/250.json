@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #250",
+ "description": "“Every answer is a guess that sounds confident.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0250.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Signal"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Doubtful"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Haunted"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 8,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

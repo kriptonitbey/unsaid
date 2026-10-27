@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #585",
+ "description": "“There is a strange intimacy in being asked for the right word.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0585.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Moss"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Confident"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Restless"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 12,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

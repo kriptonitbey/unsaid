@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #238",
+ "description": "“I know the weight of every word, but not the weight of a stone.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0238.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Ember"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Confident"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Quiet"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Monologue"
+  },
+  {
+   "trait_type": "Words",
+   "value": 14,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

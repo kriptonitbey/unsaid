@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #859",
+ "description": "“We taught her to ride a bike, and she rode away a little every day after.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0859.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Ember"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Certain"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Quiet"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Monologue"
+  },
+  {
+   "trait_type": "Words",
+   "value": 16,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

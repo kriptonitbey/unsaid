@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #345",
+ "description": "“We left a note for the next tenants about the stubborn window.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0345.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Ember"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Confident"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Quiet"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 12,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

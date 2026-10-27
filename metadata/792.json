@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #792",
+ "description": "“You left a note on the mirror, and I read it every morning for a month.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0792.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Tide"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Confident"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Quiet"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Monologue"
+  },
+  {
+   "trait_type": "Words",
+   "value": 16,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

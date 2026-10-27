@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #52",
+ "description": "“Somewhere a child is asking me why the sky is blue, and I am taking my time.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0052.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Signal"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Wavering"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Restless"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Monologue"
+  },
+  {
+   "trait_type": "Words",
+   "value": 17,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

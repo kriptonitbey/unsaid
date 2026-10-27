@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #312",
+ "description": "“We minted at midnight and watched the reveal like children at a magic show.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0312.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Violet"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Confident"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Quiet"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Monologue"
+  },
+  {
+   "trait_type": "Words",
+   "value": 14,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

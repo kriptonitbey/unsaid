@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #1013",
+ "description": "“That is not what I meant, but it is also true.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/1013.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Ash"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Wavering"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Haunted"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 11,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

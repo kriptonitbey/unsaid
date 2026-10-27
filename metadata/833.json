@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #833",
+ "description": "“We found a coin from a country neither of us could name.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0833.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Ember"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Certain"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Quiet"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 12,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

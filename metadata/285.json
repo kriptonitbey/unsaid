@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #285",
+ "description": "“Every new block is a small heartbeat from strangers agreeing.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0285.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Ash"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Certain"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Restless"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 10,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}

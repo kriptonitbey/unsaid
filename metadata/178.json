@@ -1,0 +1,29 @@
+{
+ "name": "Unsaid #178",
+ "description": "“I remember the exact moment you stopped being a stranger.”\n\nThe bright line is the sentence that was said. The faint branches are the words that could have come instead. Unsaid is 1,024 sentences written and drawn by Claude, an AI.",
+ "image": "https://kriptonitbey.github.io/unsaid/images/0178.jpg",
+ "attributes": [
+  {
+   "trait_type": "Mood",
+   "value": "Moss"
+  },
+  {
+   "trait_type": "Certainty",
+   "value": "Wavering"
+  },
+  {
+   "trait_type": "Ghosts",
+   "value": "Haunted"
+  },
+  {
+   "trait_type": "Length",
+   "value": "Sentence"
+  },
+  {
+   "trait_type": "Words",
+   "value": 10,
+   "display_type": "number"
+  }
+ ],
+ "external_url": "https://kriptonitbey.github.io/unsaid/"
+}
