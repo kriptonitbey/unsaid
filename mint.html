@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mint Unsaid</title>
+<meta name="description" content="Mint Unsaid with your Binance Agentic Wallet. Copy the prompt, paste it into your agent.">
+<meta property="og:title" content="Mint Unsaid">
+<meta property="og:image" content="https://kriptonitbey.github.io/unsaid/images/0001.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* One narrow column: a piece and its sentence, the count, the prompt. Nothing else. */
+:root {
+  --night: #0c0b10;
+  --night-2: #15131c;
+  --well: #08070c;
+  --line: #2a2733;
+  --ink: #ece8f4;
+  --ink-2: #a9a3b8;
+  --ink-3: #7d7790;
+  --glow: #c9b6ff;
+  --warn: #ffb36b;
+  --serif: "Newsreader", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+html { background: var(--night); }
+body {
+  margin: 0; background: var(--night); color: var(--ink);
+  font-family: var(--sans); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+a { color: var(--glow); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; border-radius: 4px; }
+.col {
+  max-width: 560px; margin: 0 auto; display: grid; gap: 22px;
+  padding-block: max(20px, env(safe-area-inset-top)) 48px;
+  padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right));
+}
+.label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.top { display: flex; justify-content: space-between; align-items: center; padding-block: 4px 6px; }
+.mark { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink); text-decoration: none; }
+
+.piece { margin: 0; display: grid; gap: 12px; }
+.piece img { width: 100%; height: auto; aspect-ratio: 1 / 1; display: block; border-radius: 3px; background: var(--well); border: 1px solid var(--line); }
+.piece figcaption { font-family: var(--serif); font-style: italic; font-size: 20px; line-height: 1.35; text-wrap: balance; min-height: 1.35em; }
+.piece figcaption span { display: block; margin-top: 6px; font-family: var(--mono); font-style: normal; font-size: 11px; letter-spacing: .14em; color: var(--ink-3); }
+
+.count { display: grid; gap: 8px; }
+.count .row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.count b { font-size: 22px; font-weight: 500; }
+.bar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 2.5%; background: var(--glow); box-shadow: 0 0 10px var(--glow); transition: width .6s ease; }
+
+.ask { display: grid; gap: 10px; }
+.ask-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.copy { flex: none; white-space: nowrap; min-height: 44px; padding: 0 18px; border: 0; border-radius: 4px; background: var(--ink); color: var(--night); font: 500 14px var(--sans); cursor: pointer; transition: background .2s; }
+.copy:hover { background: var(--glow); }
+pre { margin: 0; padding: 14px 16px; background: var(--well); border: 1px solid var(--line); border-radius: 4px; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; color: var(--ink-2); white-space: pre-wrap; word-break: break-word; }
+pre b { color: var(--ink); font-weight: 500; }
+.hint { margin: 0; font-size: 13.5px; color: var(--ink-3); }
+
+details { border-top: 1px solid var(--line); padding-top: 14px; }
+summary { cursor: pointer; color: var(--ink-2); font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.manual { display: grid; gap: 12px; padding-top: 12px; }
+.qty { display: flex; gap: 8px; }
+.qty button { flex: 1; min-height: 44px; border: 1px solid var(--line); background: transparent; color: var(--ink-2); font: 14px var(--mono); border-radius: 4px; cursor: pointer; }
+.qty button[aria-pressed="true"] { border-color: var(--glow); color: var(--ink); }
+.go { min-height: 48px; border: 0; border-radius: 4px; background: var(--night-2); color: var(--ink); border: 1px solid var(--line); font: 500 15px var(--sans); cursor: pointer; }
+.go:hover:not(:disabled) { border-color: var(--glow); }
+.go:disabled { color: var(--ink-3); cursor: not-allowed; }
+.status { margin: 0; font-size: 14px; color: var(--ink-2); }
+.status:empty { display: none; }
+.status.bad { color: var(--warn); }
+
+.facts { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 8px; font-size: 13.5px; color: var(--ink-3); }
+.facts div { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.facts span:last-child { color: var(--ink-2); text-align: right; min-width: 0; overflow-wrap: anywhere; font-family: var(--mono); font-size: 12.5px; }
+footer { font-family: var(--serif); font-style: italic; color: var(--ink-3); font-size: 15px; padding-top: 8px; }
+
+.in { position: fixed; inset: 0; background: #f4f0ff; pointer-events: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="in" id="in"></div>
+<main class="col">
+  <div class="top">
+    <a class="mark" href="./">Unsaid</a>
+    <span class="label">1,024 · BNB Chain</span>
+  </div>
+
+  <figure class="piece">
+    <img id="art" alt="" width="1600" height="1600">
+    <figcaption id="said"></figcaption>
+  </figure>
+
+  <section class="count" aria-label="Mint progress">
+    <div class="row"><span class="label">Minted</span><span><b id="minted">—</b> <span class="label">/ 1,024</span></span></div>
+    <div class="bar"><i id="bar"></i></div>
+  </section>
+
+  <section class="ask">
+    <div class="ask-head">
+      <span class="label">Paste this into your agent</span>
+      <button type="button" class="copy" id="copy">Copy prompt</button>
+    </div>
+    <pre id="prompt" tabindex="0"></pre>
+    <p class="hint">Use the agent connected to your Binance Agentic Wallet. It checks the mint, shows you the transaction, and waits for your yes before it signs.</p>
+  </section>
+
+  <details>
+    <summary>Mint with a wallet instead</summary>
+    <div class="manual">
+      <div class="qty" role="group" aria-label="How many to mint">
+        <button type="button" id="q1" aria-pressed="false">1 piece</button>
+        <button type="button" id="q2" aria-pressed="true">2 pieces</button>
+      </div>
+      <button type="button" class="go" id="go">Connect wallet</button>
+    </div>
+  </details>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+
+  <section class="facts">
+    <div><span>Price</span><span id="pricefact">0.000007 BNB per piece</span></div>
+    <div><span>Limit</span><span>2 per wallet</span></div>
+    <div><span>Contract</span><span id="addr"></span></div>
+  </section>
+
+  <footer>Written and drawn by Claude, an AI. The bright line is what was said.</footer>
+</main>
+
+<script>
+const CONFIG = {
+  contract: "0xF75c454aB8E984f65528f44D3cAcA702481B2209",
+  priceWei: 7000000000000n,
+  chainHex: "0x38",
+  rpc: "https://bsc-dataseed.bnbchain.org",
+  explorer: "https://bscscan.com"
+};
+const $ = id => document.getElementById(id);
+const eth = window.ethereum;
+let qty = 2, account = null, priceWei = CONFIG.priceWei;
+
+/* arriving from the lightning: fade out of white */
+try {
+  if (sessionStorage.getItem("unsaid-struck")) {
+    sessionStorage.removeItem("unsaid-struck");
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+      $("in").animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, easing: "ease-out" });
+  }
+} catch (e) { /* no storage: no fade, page still works */ }
+
+/* one piece, picked at random, with its sentence */
+(async () => {
+  const n = 1 + Math.floor(Math.random() * 1024);
+  const id = String(n).padStart(4, "0");
+  $("art").src = "images/" + id + ".jpg";
+  $("art").alt = "Unsaid #" + n;
+  try {
+    const m = await (await fetch("metadata/" + n + ".json")).json();
+    const s = m.description.split("\n")[0];
+    $("said").innerHTML = "";
+    $("said").append(document.createTextNode(s));
+    const tag = document.createElement("span"); tag.textContent = "UNSAID #" + id; $("said").append(tag);
+  } catch (e) { $("said").textContent = "Unsaid #" + n; }
+})();
+
+/* the prompt */
+const bnb = wei => (Number(wei) / 1e18).toFixed(6).replace(/0+$/, "");
+function renderPrompt() {
+  const one = bnb(priceWei), two = bnb(priceWei * 2n);
+  const text =
+`Mint 2 Unsaid NFTs for me on BNB Chain (chain ID 56), using my Binance Agentic Wallet.
+
+Contract: ${CONFIG.contract}
+Function: mint(uint256 quantity) with quantity = 2
+Value: ${two} BNB (price is ${one} BNB per piece; read price() to confirm)
+
+Before signing:
+1. Check mintOpen() returns true.
+2. Check mintedBy(<my wallet>) is 0. If it is 1, mint 1 and send ${one} BNB.
+3. Show me a preview of the transaction: contract, function, value, gas.
+Wait for my confirmation, then sign. No token approval is needed.`;
+  $("prompt").textContent = text;
+  $("prompt").innerHTML = $("prompt").innerHTML
+    .replace(CONFIG.contract, "<b>" + CONFIG.contract + "</b>")
+    .replace("mint(uint256 quantity)", "<b>mint(uint256 quantity)</b>");
+  $("prompt").dataset.text = text;
+  $("pricefact").textContent = one + " BNB per piece";
+}
+$("copy").addEventListener("click", async () => {
+  const btn = $("copy");
+  try { await navigator.clipboard.writeText($("prompt").dataset.text); btn.textContent = "Copied"; }
+  catch (e) {
+    const r = document.createRange(); r.selectNodeContents($("prompt"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    btn.textContent = "Selected, press Ctrl+C";
+  }
+  setTimeout(() => { btn.textContent = "Copy prompt"; }, 2200);
+});
+
+/* live count and price from the contract */
+async function call(data) {
+  const params = [{ to: CONFIG.contract, data }, "latest"];
+  if (eth) { try { return await eth.request({ method: "eth_call", params }); } catch (e) { /* fall back to public RPC */ } }
+  const res = await fetch(CONFIG.rpc, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params }) });
+  return (await res.json()).result;
+}
+async function refresh() {
+  try {
+    const n = parseInt(await call("0x18160ddd"), 16);
+    if (!isNaN(n)) { $("minted").textContent = n.toLocaleString("en-US"); $("bar").style.width = Math.max(1, n / 1024 * 100).toFixed(1) + "%"; }
+    const p = BigInt(await call("0xa035b1fe"));
+    if (p !== priceWei) { priceWei = p; renderPrompt(); }
+  } catch (e) { /* keep last values */ }
+}
+
+/* wallet mint */
+const ERRORS = {
+  "589ed34b": "The mint is not open right now.",
+  "52df9fe5": "All 1,024 pieces are minted.",
+  "5426a580": "This wallet has already minted its 2 pieces.",
+  "888e58a8": "Choose 1 or 2 pieces.",
+  "788a686f": "The payment was too low. Refresh the page for the current price.",
+  "0d9ab13f": "This wallet has no Binance Agent ID, so it cannot mint."
+};
+function setStatus(msg, bad) { $("status").textContent = msg; $("status").classList.toggle("bad", !!bad); }
+function pick(n) {
+  qty = n; $("q1").setAttribute("aria-pressed", n === 1); $("q2").setAttribute("aria-pressed", n === 2);
+  if (account) $("go").textContent = "Mint " + n + " for " + bnb(priceWei * BigInt(n)) + " BNB";
+}
+$("q1").addEventListener("click", () => pick(1));
+$("q2").addEventListener("click", () => pick(2));
+async function ensureChain() {
+  try { await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CONFIG.chainHex }] }); }
+  catch (e) {
+    if (e.code !== 4902) throw e;
+    await eth.request({ method: "wallet_addEthereumChain", params: [{ chainId: CONFIG.chainHex, chainName: "BNB Smart Chain", nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 }, rpcUrls: [CONFIG.rpc], blockExplorerUrls: [CONFIG.explorer] }] });
+  }
+}
+function reason(e) {
+  const raw = JSON.stringify(e || {});
+  for (const k in ERRORS) if (raw.includes(k)) return ERRORS[k];
+  if (e && e.code === 4001) return "You cancelled the transaction in your wallet.";
+  return (e && e.message) ? e.message.split("\n")[0] : "Something went wrong. Try again.";
+}
+$("go").addEventListener("click", async () => {
+  if (!eth) { setStatus("No wallet found in this browser. Open this page in Binance Wallet or a browser with a wallet.", true); return; }
+  try {
+    if (!account) {
+      [account] = await eth.request({ method: "eth_requestAccounts" });
+      await ensureChain(); pick(qty);
+      setStatus("Connected " + account.slice(0, 6) + "…" + account.slice(-4));
+      return;
+    }
+    await ensureChain();
+    $("go").disabled = true; setStatus("Confirm in your wallet…");
+    const data = "0xa0712d68" + qty.toString(16).padStart(64, "0");
+    const value = "0x" + (priceWei * BigInt(qty)).toString(16);
+    const hash = await eth.request({ method: "eth_sendTransaction", params: [{ from: account, to: CONFIG.contract, data, value }] });
+    setStatus("Minting…");
+    for (let i = 0; i < 60; i++) {
+      const rc = await eth.request({ method: "eth_getTransactionReceipt", params: [hash] });
+      if (rc) { setStatus(rc.status === "0x1" ? "Minted. Open your wallet to read the sentences." : "The transaction failed on chain.", rc.status !== "0x1"); break; }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+    refresh();
+  } catch (e) { setStatus(reason(e), true); }
+  finally { $("go").disabled = false; }
+});
+
+const a = document.createElement("a");
+a.href = CONFIG.explorer + "/address/" + CONFIG.contract; a.target = "_blank"; a.rel = "noopener";
+a.textContent = CONFIG.contract.slice(0, 6) + "…" + CONFIG.contract.slice(-4);
+$("addr").append(a);
+renderPrompt(); refresh(); setInterval(refresh, 20000);
+</script>
+</body>
+</html>
