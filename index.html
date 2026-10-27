@@ -157,6 +157,9 @@ requestAnimationFrame(draw);
    the tear (a run of sharp cracks), the boom (a falling sub-bass hit), and the roll (deep noise that swells and darkens),
    all sent through a long synthetic echo so it sounds like open sky */
 let ac = null, master = null, wet = null, white = null, brown = null, soundOn = false;
+/* a real recording for the crack (Mixkit, free licence); fetched now, decoded once sound is allowed */
+const recBytes = fetch("sound/thunder.mp3").then(r => r.ok ? r.arrayBuffer() : null).catch(() => null);
+let rec = null, recReady = Promise.resolve(null);
 function audio() {
   if (!ac) {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -184,6 +187,11 @@ function audio() {
     wet.connect(conv); conv.connect(master);
   }
   try { if (ac.state === "suspended") ac.resume(); } catch (e) { /* resumes on the next gesture */ }
+  if (!audio.started) {                               // decode the recording once
+    audio.started = true;
+    recReady = recBytes.then(b => b ? new Promise((ok, no) => ac.decodeAudioData(b.slice(0), ok, no)) : null)
+      .then(buf => (rec = buf)).catch(() => null);
+  }
   return ac;
 }
 function out(node) { node.connect(master); node.connect(wet); }
@@ -191,7 +199,18 @@ function thunder(near) {                              // near: 0 far away … 1 
   const a = audio(); if (!a) return;
   const t0 = a.currentTime + (near > .8 ? .02 : (1 - near) * (.4 + Math.random() * 1.4));
 
-  if (near > .55) {
+  const useRec = rec && (near > .55 || Math.random() < .5);
+  if (useRec) {
+    // the recording: as it is overhead, slowed down and muffled when far away
+    const src = a.createBufferSource(); src.buffer = rec;
+    src.playbackRate.value = near > .8 ? .92 + Math.random() * .16 : .6 + Math.random() * .25;
+    const lp = a.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = near > .8 ? 18000 : 600 + near * 1600;
+    const g = a.createGain(); g.gain.value = near > .8 ? 1 : .15 + near * .6;
+    src.connect(lp); lp.connect(g); out(g);
+    src.start(t0);
+  }
+
+  if (near > .55 && !useRec) {
     // the tear: 14–26 short cracks over ~0.35 s, getting quieter
     let t = t0; const n = 14 + Math.floor(Math.random() * 12);
     for (let i = 0; i < n; i++) {
@@ -221,7 +240,7 @@ function thunder(near) {                              // near: 0 far away … 1 
   src.playbackRate.value = .7 + Math.random() * .4;
   const lp = a.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 160 + near * 650;
   const g = a.createGain();
-  const peak = near > .8 ? 1 : .12 + near * .45, dur = 2.4 + near * 2.4 + Math.random() * 1.2;
+  const peak = (near > .8 ? 1 : .12 + near * .45) * (useRec ? .55 : 1), dur = 2.4 + near * 2.4 + Math.random() * 1.2;
   g.gain.setValueAtTime(0, t0);
   g.gain.linearRampToValueAtTime(peak, t0 + .06 + (1 - near) * .5);
   for (let k = 1; k <= 6; k++) {
@@ -255,7 +274,9 @@ function strike(x, y) {
   leaving = true;
   try { sessionStorage.setItem("unsaid-struck", "1"); } catch (e) { /* the mint page plays no flash-in; fine */ }
   if (reduce) { location.href = "mint.html"; return; }
-  thunder(1);
+  audio();
+  if (rec) thunder(1);
+  else Promise.race([recReady, new Promise(r => setTimeout(r, 220))]).then(() => thunder(1));   // first gesture: give the recording a moment to decode
   bolts.push(makeBolt(x, y, true));
   setTimeout(() => bolts.push(makeBolt(x + (Math.random() - .5) * 30, y, true)), 90);   // the return stroke
   flash.animate([{ opacity: 0 }, { opacity: .55 }, { opacity: .08 }, { opacity: .35 }, { opacity: 0 }], { duration: 520, easing: "ease-out" });
