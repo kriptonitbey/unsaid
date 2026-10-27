@@ -9,6 +9,7 @@
 <meta property="og:image" content="https://unsaidagent.xyz/images/0001.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/site.css">
 <style>
 /* A line of thesis, three numbers, then the ledger: newest mint first, refreshed while you watch. */
@@ -40,15 +41,17 @@ tr.new td { animation: arrive 2.4s ease-out; }
 </style>
 </head>
 <body>
+<div class="band"><div class="wrap">
+  <header class="nav">
+    <a class="brand" href="./"><img src="assets/mark.svg" alt="" width="34" height="34"><span>Unsaid</span></a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="collection.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="3.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="3.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>Collection</a>
+      <a href="activity.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg>Activity</a>
+    </nav>
+    <a class="cta" href="mint.html"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 5 13.5h5.5L9.5 22 19 9.5h-5.6L13.5 2z"/></svg>Mint <span class="count" data-supply>…/1024</span></a>
+  </header>
+</div></div>
 <div class="wrap">
-  <nav class="nav" aria-label="Unsaid">
-    <a class="mark" href="./">Unsaid</a>
-    <ul>
-      <li><a href="mint.html">Mint</a></li>
-      <li><a href="collection.html">Collection</a></li>
-      <li><a href="activity.html" aria-current="page">Activity</a></li>
-    </ul>
-  </nav>
 
   <header class="head">
     <h1>Tons of words come in every day. <em>Only the right ones leave.</em></h1>
@@ -98,13 +101,13 @@ function stats() {
 }
 
 (async () => {
-  P = await pieces();
   try {
     $("sMinted").textContent = (await totalSupply()).toLocaleString("en-US");
     const res = await recentMints(80, (n, f) => { $("state").textContent = `Reading BNB Chain… ${Math.round(f * 100)}%`; });
     all = res.mints; lastBlock = res.latest;
     all.forEach(m => seen.add(m.tx + m.id));
     Object.assign(times, await blockTimes(all.map(m => m.block)));
+    for (const m of await metas(all.map(m => m.id))) P[m[0] - 1] = m;
     $("rows").innerHTML = all.length ? all.map(m => row(m, false)).join("") : `<tr><td colspan="4" class="state">No mints yet.</td></tr>`;
     if (!res.complete) $("rows").insertAdjacentHTML("beforeend", `<tr><td colspan="4" class="state">Older mints are on <a href="https://bscscan.com/token/${UNSAID.contract}" target="_blank" rel="noopener">BscScan</a>.</td></tr>`);
     stats();
@@ -127,6 +130,7 @@ async function poll() {
     if (!fresh.length) return;
     fresh.forEach(m => seen.add(m.tx + m.id));
     Object.assign(times, await blockTimes(fresh.map(m => m.block)));
+    for (const m of await metas(fresh.map(m => m.id))) P[m[0] - 1] = m;
     if (!all.length) $("rows").innerHTML = "";
     all = fresh.concat(all);
     $("rows").insertAdjacentHTML("afterbegin", fresh.map(m => row(m, true)).join(""));

@@ -106,9 +106,26 @@ function ago(ms) {
   const h = Math.round(m / 60); if (h < 48) return h + "h ago";
   return Math.round(h / 24) + "d ago";
 }
-let _pieces = null;
-async function pieces() {
-  if (!_pieces) _pieces = fetch("data/pieces.json").then(r => r.json());
-  return _pieces;                                            // [id, sentence, mood, certainty, ghosts, length, words]
+/* metadata for one minted piece: [id, sentence, mood, certainty, ghosts, length, words] */
+const _meta = {};
+function meta(id) {
+  if (!_meta[id]) _meta[id] = fetch("metadata/" + id + ".json").then(r => r.json()).then(m => {
+    const a = Object.fromEntries(m.attributes.map(x => [x.trait_type, x.value]));
+    return [id, m.description.split("\n")[0].replace(/^\u201c|\u201d$/g, ""), a.Mood, a.Certainty, a.Ghosts, a.Length, a.Words];
+  }).catch(() => [id, "", "", "", "", "", ""]);
+  return _meta[id];
+}
+async function metas(ids) {
+  const out = [];
+  for (let i = 0; i < ids.length; i += 16) out.push(...await Promise.all(ids.slice(i, i + 16).map(meta)));
+  return out;
 }
 function pad4(n) { return String(n).padStart(4, "0"); }
+
+/* the live count on the Mint button */
+(function () {
+  const els = document.querySelectorAll("[data-supply]");
+  if (!els.length) return;
+  const paint = () => totalSupply().then(n => els.forEach(e => { e.textContent = n.toLocaleString("en-US") + "/1024"; })).catch(() => {});
+  paint(); setInterval(paint, 30000);
+})();

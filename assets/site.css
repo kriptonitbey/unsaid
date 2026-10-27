@@ -21,13 +21,31 @@ a { color: var(--glow); text-underline-offset: 3px; }
 .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
 .label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
 
-/* top navigation, shared by mint / collection / activity */
-.nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: max(18px, env(safe-area-inset-top)) 14px; flex-wrap: wrap; }
-.nav .mark { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink); text-decoration: none; }
-.nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
-.nav li a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; }
-.nav li a:hover { color: var(--ink); }
-.nav li a[aria-current="page"] { color: var(--ink); background: var(--night-2); border: 1px solid var(--line); }
+/* the band: a strip across the top that holds the bar, set apart from the page below */
+.band { position: sticky; top: 0; z-index: 40; background: rgba(17,15,24,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #2f2a3d; }
+.band::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,182,255,.55) 30%, rgba(201,182,255,.55) 70%, transparent); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 41; background: #110f17; }
+/* top bar: brand on the left, two tabs, the Mint button on the right */
+.nav { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; padding-block: max(12px, env(safe-area-inset-top)) 12px; }
+.band + * { margin-top: 0; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; margin-right: auto; }
+.brand img { width: 34px; height: 34px; display: block; filter: drop-shadow(0 0 10px rgba(201,182,255,.25)); }
+.brand span { font-family: var(--serif); font-style: italic; font-size: 25px; letter-spacing: .005em; }
+.tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: rgba(21,19,28,.7); }
+.tabs a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border-radius: 10px; font: 500 14.5px var(--sans); color: var(--ink-2); text-decoration: none; transition: color .2s, background .2s; }
+.tabs a svg { width: 17px; height: 17px; flex: none; }
+.tabs a:hover { color: var(--ink); background: rgba(255,255,255,.04); }
+.tabs a[aria-current="page"] { color: var(--ink); background: #221e2e; box-shadow: inset 0 0 0 1px rgba(201,182,255,.45), 0 0 22px rgba(160,130,255,.18); }
+.tabs a[aria-current="page"] svg { color: var(--glow); }
+.cta { display: inline-flex; align-items: center; gap: 9px; min-height: 46px; padding: 0 18px; border-radius: 12px; background: var(--ink); color: #0c0b10; font: 500 15px var(--sans); text-decoration: none; transition: box-shadow .25s, background .25s; }
+.cta svg { width: 17px; height: 17px; }
+.cta:hover { background: #fff; box-shadow: 0 0 0 1px rgba(201,182,255,.6), 0 0 28px rgba(160,130,255,.45); }
+.cta[aria-current="page"] { box-shadow: 0 0 0 1px rgba(201,182,255,.6), 0 0 22px rgba(160,130,255,.35); }
+.cta .count { font: 500 12px var(--mono); padding: 3px 8px; border-radius: 8px; background: rgba(12,11,16,.1); font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .tabs { order: 3; width: 100%; }
+  .tabs a { flex: 1; justify-content: center; }
+}
 
 .foot { border-top: 1px solid var(--line); margin-top: 56px; padding-block: 22px 40px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--serif); font-style: italic; color: var(--ink-3); }
 .foot a { font-family: var(--mono); font-style: normal; font-size: 12px; }

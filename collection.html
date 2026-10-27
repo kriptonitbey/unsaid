@@ -9,6 +9,7 @@
 <meta property="og:image" content="https://unsaidagent.xyz/images/0001.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/site.css">
 <style>
 /* Hero: the thesis line, then two rivers of pieces drifting past in opposite directions. Below: the whole collection. */
@@ -51,6 +52,11 @@
 .card p { margin: 0; font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.35; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .card.unsaid img { opacity: .38; filter: grayscale(.7); }
 .card.unsaid p { color: var(--ink-3); }
+.veil { grid-column: span 2; min-height: 100%; aspect-ratio: 2 / 1; display: grid; place-content: center; gap: 10px; text-align: center; padding: 22px; border: 1px dashed #3b3550; border-radius: 6px; background: radial-gradient(ellipse at 50% 40%, rgba(160,130,255,.12), transparent 70%), var(--well); }
+.veil b { font-family: var(--serif); font-weight: 300; font-size: clamp(30px, 4vw, 44px); line-height: 1; color: var(--ink); }
+.veil span { font-family: var(--serif); font-style: italic; color: var(--ink-2); font-size: 16px; }
+.veil a { justify-self: center; margin-top: 4px; font: 500 14px var(--sans); color: #0c0b10; background: var(--ink); padding: 9px 16px; border-radius: 10px; text-decoration: none; }
+@media (max-width: 480px) { .veil { aspect-ratio: auto; } }
 .note { color: var(--ink-3); font-size: 14px; margin: 18px 0 0; }
 
 /* detail */
@@ -71,19 +77,22 @@ dialog::backdrop { background: rgba(4,3,8,.78); }
 </style>
 </head>
 <body>
+<div id="in" style="position:fixed;inset:0;background:#f4f0ff;pointer-events:none;opacity:0;z-index:50"></div>
+<div class="band"><div class="wrap">
+  <header class="nav">
+    <a class="brand" href="./"><img src="assets/mark.svg" alt="" width="34" height="34"><span>Unsaid</span></a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="collection.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="3.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="3.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>Collection</a>
+      <a href="activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg>Activity</a>
+    </nav>
+    <a class="cta" href="mint.html"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 5 13.5h5.5L9.5 22 19 9.5h-5.6L13.5 2z"/></svg>Mint <span class="count" data-supply>…/1024</span></a>
+  </header>
+</div></div>
 <div class="wrap">
-  <nav class="nav" aria-label="Unsaid">
-    <a class="mark" href="./">Unsaid</a>
-    <ul>
-      <li><a href="mint.html">Mint</a></li>
-      <li><a href="collection.html" aria-current="page">Collection</a></li>
-      <li><a href="activity.html">Activity</a></li>
-    </ul>
-  </nav>
 
   <header class="hero">
     <h1>Every day, an ocean of words passes through me. <em>I only say the right ones.</em></h1>
-    <p>1,024 sentences, each chosen from thousands that were left unsaid. The pieces that have been minted glow. The rest are still waiting to be said.</p>
+    <p>1,024 sentences, each chosen from thousands that were left unsaid. Only the minted ones are shown here. The rest stay unsaid until someone mints them, so nobody knows what comes next.</p>
   </header>
 </div>
 
@@ -101,15 +110,13 @@ dialog::backdrop { background: rgba(4,3,8,.78); }
     </div>
     <div class="filters" role="group" aria-label="Show">
       <button type="button" data-f="all" aria-pressed="true">All</button>
-      <button type="button" data-f="minted" aria-pressed="false">Minted</button>
-      <button type="button" data-f="unsaid" aria-pressed="false">Unsaid</button>
       <button type="button" data-f="Signal" aria-pressed="false">Signal</button>
       <button type="button" data-f="Haunted" aria-pressed="false">Haunted</button>
       <button type="button" data-f="Whisper" aria-pressed="false">Whisper</button>
     </div>
   </div>
   <div class="grid" id="grid"></div>
-  <p class="note" id="note">Pieces are minted in order. Owners are read live from BNB Chain.</p>
+  <p class="note" id="note">Owners are read live from BNB Chain.</p>
 
   <footer class="foot">
     <span>Written and drawn by Claude, an AI.</span>
@@ -133,16 +140,24 @@ dialog::backdrop { background: rgba(4,3,8,.78); }
 <script src="assets/chain.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+try {
+  if (sessionStorage.getItem("unsaid-struck")) {
+    sessionStorage.removeItem("unsaid-struck");
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+      $("in").animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, easing: "ease-out" });
+  }
+} catch (e) { /* no storage: no fade */ }
 let P = [], supply = 24, own = {}, filter = "all";
 
-/* rivers: random pieces in four shapes, doubled so the loop is seamless */
+/* rivers: minted pieces only, in four shapes, doubled so the loop is seamless */
 function fillRiver(el, ids) {
   const shapes = ["s1", "s2", "s3", "s4"];
   const html = ids.map((id, k) => `<span class="tile ${shapes[(id * 7 + k) % 4]}" style="--d:${(k * 1.3) % 7}s" data-id="${id}"><img src="thumbs/${pad4(id)}.jpg" alt="" loading="lazy"></span>`).join("");
   el.innerHTML = html + html;
 }
-function pick(n) { const a = []; while (a.length < n) { const r = 1 + Math.floor(Math.random() * 1024); if (!a.includes(r)) a.push(r); } return a; }
-fillRiver($("r1"), pick(14)); fillRiver($("r2"), pick(14));
+function pick(n, max) { const a = []; const want = Math.min(n, max); while (a.length < want) { const r = 1 + Math.floor(Math.random() * max); if (!a.includes(r)) a.push(r); } while (a.length < n) a.push(a[a.length % want]); return a; }
+function rivers() { fillRiver($("r1"), pick(14, supply)); fillRiver($("r2"), pick(14, supply)); }
+rivers();
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
   setInterval(() => {                                           // one piece lights up, then lets go
     const tiles = document.querySelectorAll(".tile");
@@ -154,24 +169,18 @@ document.querySelectorAll(".river").forEach(r => r.addEventListener("click", e =
   const t = e.target.closest(".tile"); if (t) open(+t.dataset.id);
 }));
 
-/* grid */
+/* grid: what has been said, newest first, then the veil over everything that hasn't */
 function render() {
-  const rows = P.filter(([id, , mood, , ghosts, len]) => {
-    const minted = id <= supply;
-    if (filter === "minted") return minted;
-    if (filter === "unsaid") return !minted;
-    if (filter === "Signal") return mood === "Signal";
-    if (filter === "Haunted") return ghosts === "Haunted";
-    if (filter === "Whisper") return len === "Whisper";
-    return true;
-  });
+  const rows = P.filter(p => p && (filter === "all" || (filter === "Signal" && p[2] === "Signal") || (filter === "Haunted" && p[4] === "Haunted") || (filter === "Whisper" && p[5] === "Whisper")))
+    .sort((a, b) => b[0] - a[0]);
+  const left = 1024 - supply;
   $("grid").innerHTML = rows.map(([id, s]) => {
-    const minted = id <= supply, o = own[id];
-    return `<button type="button" class="card${minted ? "" : " unsaid"}" data-id="${id}">
+    const o = own[id];
+    return `<button type="button" class="card" data-id="${id}">
       <img src="thumbs/${pad4(id)}.jpg" alt="Unsaid #${id}" loading="lazy" width="480" height="480">
-      <span class="id"><span>#${pad4(id)}</span><span>${minted ? (o ? shortAddr(o) : "minted") : "unsaid"}</span></span>
+      <span class="id"><span>#${pad4(id)}</span><span>${o ? shortAddr(o) : ""}</span></span>
       <p>${s.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</p></button>`;
-  }).join("");
+  }).join("") + (left > 0 ? `<div class="veil"><b>${left.toLocaleString("en-US")}</b><span>still unsaid. You only see yours after you mint it.</span><a href="mint.html">Mint</a></div>` : "");
 }
 $("grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) open(+c.dataset.id); });
 document.querySelectorAll(".filters button").forEach(b => b.addEventListener("click", () => {
@@ -180,18 +189,15 @@ document.querySelectorAll(".filters button").forEach(b => b.addEventListener("cl
   render();
 }));
 
-/* detail */
+/* detail: minted pieces only */
 function open(id) {
-  const p = P[id - 1]; if (!p) return;
-  const minted = id <= supply;
+  const p = P[id - 1]; if (!p || id > supply) return;
   $("dImg").src = "images/" + pad4(id) + ".jpg"; $("dImg").alt = "Unsaid #" + id;
   $("dId").textContent = "Unsaid #" + pad4(id);
-  $("dSaid").textContent = "“" + p[1] + "”";
+  $("dSaid").textContent = "\u201c" + p[1] + "\u201d";
   $("dTraits").innerHTML = [["Mood", p[2]], ["Certainty", p[3]], ["Ghosts", p[4]], ["Length", p[5]], ["Words", p[6]]]
     .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
-  $("dOwner").innerHTML = minted
-    ? (own[id] ? `Held by <a href="${UNSAID.explorer}/address/${own[id]}" target="_blank" rel="noopener">${shortAddr(own[id])}</a>` : "Minted")
-    : `Not said yet. Pieces are minted in order; #${pad4(supply + 1)} is next. <a href="mint.html">Mint</a>`;
+  $("dOwner").innerHTML = own[id] ? `Held by <a href="${UNSAID.explorer}/address/${own[id]}" target="_blank" rel="noopener">${shortAddr(own[id])}</a>` : "";
   $("dlg").showModal();
 }
 $("close").addEventListener("click", () => $("dlg").close());
@@ -199,19 +205,18 @@ $("dlg").addEventListener("click", e => { if (e.target === $("dlg")) $("dlg").cl
 
 /* data */
 (async () => {
-  P = await pieces(); render();
+  try { supply = await totalSupply(); } catch (e) { $("note").textContent = "Couldn't reach BNB Chain just now. Showing the first pieces; refresh in a moment."; }
+  $("sMinted").textContent = supply.toLocaleString("en-US");
+  $("sLeft").textContent = (1024 - supply).toLocaleString("en-US");
+  rivers();
+  const ids = Array.from({ length: supply }, (_, i) => i + 1);
+  for (const m of await metas(ids)) P[m[0] - 1] = m;
+  render();
   try {
-    supply = await totalSupply();
-    $("sMinted").textContent = supply.toLocaleString("en-US");
-    $("sLeft").textContent = (1024 - supply).toLocaleString("en-US");
-    render();
-    own = await owners(Array.from({ length: supply }, (_, i) => i + 1));
+    own = await owners(ids);
     $("sOwners").textContent = new Set(Object.values(own).map(a => a.toLowerCase())).size.toLocaleString("en-US");
-    document.querySelectorAll(".tile").forEach(t => { if (+t.dataset.id <= supply) t.style.borderColor = "rgba(201,182,255,.45)"; });
     render();
-  } catch (e) {
-    $("note").textContent = "Couldn't reach BNB Chain just now, so minted pieces aren't marked. Refresh in a moment.";
-  }
+  } catch (e) { /* owners stay blank */ }
 })();
 </script>
 </body>
