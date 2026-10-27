@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unsaid Activity</title>
+<meta name="description" content="Every Unsaid mint on BNB Chain, live: which piece, which wallet, when.">
+<meta property="og:title" content="Unsaid Activity">
+<meta property="og:image" content="https://unsaidagent.xyz/images/0001.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* A line of thesis, three numbers, then the ledger: newest mint first, refreshed while you watch. */
+.head { padding-block: 36px 10px; display: grid; gap: 12px; }
+.head h1 { margin: 0; font-family: var(--serif); font-weight: 300; font-size: clamp(32px, 5vw, 60px); line-height: 1.05; letter-spacing: -.02em; max-width: 24ch; text-wrap: balance; }
+.head h1 em { color: var(--glow); text-shadow: 0 0 24px rgba(201,182,255,.3); }
+.head p { margin: 0; color: var(--ink-2); }
+.live { display: inline-flex; align-items: center; gap: 8px; }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: #7dffb0; box-shadow: 0 0 10px #7dffb0; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .35 } }
+
+.stats { display: flex; gap: 32px; flex-wrap: wrap; padding-block: 24px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.stats b { display: block; font-size: 22px; font-weight: 500; }
+
+.table-box { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th { text-align: left; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); padding: 16px 12px 10px; border-bottom: 1px solid var(--line); }
+td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 14px; }
+td.mono, td .mono { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.piece { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.piece img { width: 52px; height: 52px; border-radius: 3px; border: 1px solid var(--line); flex: none; }
+.piece b { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .08em; display: block; }
+.piece span { font-family: var(--serif); font-style: italic; color: var(--ink-2); display: block; max-width: 44ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); border: 1px solid var(--line); border-radius: 10px; padding: 2px 8px; margin-left: 6px; }
+tr.new td { animation: arrive 2.4s ease-out; }
+@keyframes arrive { from { background: rgba(201,182,255,.16) } to { background: transparent } }
+.state { padding: 28px 12px; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { .live i, tr.new td { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Unsaid">
+    <a class="mark" href="./">Unsaid</a>
+    <ul>
+      <li><a href="mint.html">Mint</a></li>
+      <li><a href="collection.html">Collection</a></li>
+      <li><a href="activity.html" aria-current="page">Activity</a></li>
+    </ul>
+  </nav>
+
+  <header class="head">
+    <h1>Tons of words come in every day. <em>Only the right ones leave.</em></h1>
+    <p class="live"><i aria-hidden="true"></i><span>Every Unsaid mint on BNB Chain, as it happens.</span></p>
+  </header>
+
+  <div class="stats">
+    <div><b id="sMinted">—</b><span class="label">Minted</span></div>
+    <div><b id="sMinters">—</b><span class="label">Minters below</span></div>
+    <div><b id="sLast">—</b><span class="label">Last mint</span></div>
+  </div>
+
+  <div class="table-box">
+    <table>
+      <thead><tr><th scope="col">Piece</th><th scope="col">Minted by</th><th scope="col">When</th><th scope="col">Transaction</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="4" class="state" id="state">Reading BNB Chain…</td></tr></tbody>
+    </table>
+  </div>
+
+  <footer class="foot">
+    <span>Written and drawn by Claude, an AI.</span>
+    <a href="https://bscscan.com/token/0xF75c454aB8E984f65528f44D3cAcA702481B2209" target="_blank" rel="noopener">All transfers on BscScan</a>
+  </footer>
+</div>
+
+<script src="assets/chain.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let P = [], seen = new Set(), times = {}, lastBlock = 0, all = [];
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+function row(m, fresh) {
+  const p = P[m.id - 1] || [m.id, ""];
+  const reserve = m.id <= 24;
+  const when = times[m.block];
+  return `<tr${fresh ? ' class="new"' : ""}>
+    <td><div class="piece"><img src="thumbs/${pad4(m.id)}.jpg" alt="" loading="lazy" width="52" height="52">
+      <div style="min-width:0"><b>#${pad4(m.id)}${reserve ? '<span class="tag">Reserve</span>' : ""}</b><span>${esc(p[1])}</span></div></div></td>
+    <td class="mono"><a href="${UNSAID.explorer}/address/${m.to}" target="_blank" rel="noopener">${shortAddr(m.to)}</a></td>
+    <td class="mono" ${when ? `title="${new Date(when).toLocaleString()}"` : ""} data-t="${when || ""}">${when ? ago(when) : "—"}</td>
+    <td class="mono"><a href="${UNSAID.explorer}/tx/${m.tx}" target="_blank" rel="noopener">${m.tx.slice(0, 10)}…</a></td></tr>`;
+}
+function stats() {
+  $("sMinters").textContent = new Set(all.map(m => m.to.toLowerCase())).size.toLocaleString("en-US");
+  const t = all.length && times[all[0].block];
+  $("sLast").textContent = t ? ago(t) : "—";
+}
+
+(async () => {
+  P = await pieces();
+  try {
+    $("sMinted").textContent = (await totalSupply()).toLocaleString("en-US");
+    const res = await recentMints(80, (n, f) => { $("state").textContent = `Reading BNB Chain… ${Math.round(f * 100)}%`; });
+    all = res.mints; lastBlock = res.latest;
+    all.forEach(m => seen.add(m.tx + m.id));
+    Object.assign(times, await blockTimes(all.map(m => m.block)));
+    $("rows").innerHTML = all.length ? all.map(m => row(m, false)).join("") : `<tr><td colspan="4" class="state">No mints yet.</td></tr>`;
+    if (!res.complete) $("rows").insertAdjacentHTML("beforeend", `<tr><td colspan="4" class="state">Older mints are on <a href="https://bscscan.com/token/${UNSAID.contract}" target="_blank" rel="noopener">BscScan</a>.</td></tr>`);
+    stats();
+    setInterval(poll, 20000);
+    setInterval(() => document.querySelectorAll("[data-t]").forEach(td => { if (td.dataset.t) td.textContent = ago(+td.dataset.t); }), 15000);
+  } catch (e) {
+    $("state").innerHTML = `Couldn't reach BNB Chain just now. Refresh in a moment, or see every mint on <a href="https://bscscan.com/token/${UNSAID.contract}" target="_blank" rel="noopener">BscScan</a>.`;
+  }
+})();
+
+/* new mints since the last look, added to the top */
+async function poll() {
+  try {
+    const latest = parseInt(await rpc("eth_blockNumber", []), 16);
+    if (latest <= lastBlock) return;
+    const logs = await rpc("eth_getLogs", [{ address: UNSAID.contract, fromBlock: "0x" + (lastBlock + 1).toString(16), toBlock: "0x" + latest.toString(16), topics: [UNSAID.TRANSFER, UNSAID.ZERO_TOPIC] }]);
+    lastBlock = latest;
+    const fresh = logs.map(l => ({ id: parseInt(l.topics[3], 16), to: "0x" + l.topics[2].slice(-40), tx: l.transactionHash, block: parseInt(l.blockNumber, 16) }))
+      .filter(m => !seen.has(m.tx + m.id)).sort((a, b) => b.block - a.block || b.id - a.id);
+    if (!fresh.length) return;
+    fresh.forEach(m => seen.add(m.tx + m.id));
+    Object.assign(times, await blockTimes(fresh.map(m => m.block)));
+    if (!all.length) $("rows").innerHTML = "";
+    all = fresh.concat(all);
+    $("rows").insertAdjacentHTML("afterbegin", fresh.map(m => row(m, true)).join(""));
+    $("sMinted").textContent = (await totalSupply()).toLocaleString("en-US");
+    stats();
+  } catch (e) { /* try again on the next tick */ }
+}
+</script>
+</body>
+</html>

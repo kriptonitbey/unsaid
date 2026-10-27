@@ -41,6 +41,10 @@ a { color: var(--glow); text-underline-offset: 3px; }
 .label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
 .top { display: flex; justify-content: space-between; align-items: center; padding-block: 4px 6px; }
 .mark { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink); text-decoration: none; }
+.links { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
+.links a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px; border-radius: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; }
+.links a:hover { color: var(--ink); }
+.links a[aria-current="page"] { color: var(--ink); background: var(--night-2); border: 1px solid var(--line); }
 
 .piece { margin: 0; display: grid; gap: 12px; }
 .piece img { width: 100%; height: auto; aspect-ratio: 1 / 1; display: block; border-radius: 3px; background: var(--well); border: 1px solid var(--line); }
@@ -86,10 +90,14 @@ footer { font-family: var(--serif); font-style: italic; color: var(--ink-3); fon
 <body>
 <div class="in" id="in"></div>
 <main class="col">
-  <div class="top">
+  <nav class="top" aria-label="Unsaid">
     <a class="mark" href="./">Unsaid</a>
-    <span class="label">1,024 · BNB Chain</span>
-  </div>
+    <ul class="links">
+      <li><a href="mint.html" aria-current="page">Mint</a></li>
+      <li><a href="collection.html">Collection</a></li>
+      <li><a href="activity.html">Activity</a></li>
+    </ul>
+  </nav>
 
   <figure class="piece">
     <img id="art" alt="" width="1600" height="1600">

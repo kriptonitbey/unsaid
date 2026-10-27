@@ -1,0 +1,33 @@
+/* Unsaid: shared look for the inner pages. Night ground, violet light, serif for what was said, mono for data. */
+:root {
+  --night: #0c0b10;
+  --night-2: #15131c;
+  --well: #08070c;
+  --line: #2a2733;
+  --ink: #ece8f4;
+  --ink-2: #a9a3b8;
+  --ink-3: #7d7790;
+  --glow: #c9b6ff;
+  --warn: #ffb36b;
+  --serif: "Newsreader", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+html { background: var(--night); }
+body { margin: 0; background: var(--night); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: var(--glow); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+.label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+
+/* top navigation, shared by mint / collection / activity */
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: max(18px, env(safe-area-inset-top)) 14px; flex-wrap: wrap; }
+.nav .mark { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink); text-decoration: none; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
+.nav li a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; }
+.nav li a:hover { color: var(--ink); }
+.nav li a[aria-current="page"] { color: var(--ink); background: var(--night-2); border: 1px solid var(--line); }
+
+.foot { border-top: 1px solid var(--line); margin-top: 56px; padding-block: 22px 40px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--serif); font-style: italic; color: var(--ink-3); }
+.foot a { font-family: var(--mono); font-style: normal; font-size: 12px; }
