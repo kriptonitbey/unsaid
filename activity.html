@@ -125,16 +125,42 @@ function stats() {
     setInterval(poll, 20000);
     setInterval(() => document.querySelectorAll("[data-t]").forEach(td => { if (td.dataset.t) td.textContent = ago(+td.dataset.t); }), 15000);
   } catch (e) {
-    $("state").innerHTML = `Couldn't reach BNB Chain just now. Refresh in a moment, or see every mint on <a href="https://bscscan.com/token/${UNSAID.contract}" target="_blank" rel="noopener">BscScan</a>.`;
+    fallback();
   }
 })();
+
+/* when no public node will serve mint history: newest pieces and their holders, read the same way the Collection does */
+async function fallback() {
+  try {
+    const n = await totalSupply();
+    $("sMinted").textContent = n.toLocaleString("en-US");
+    const ids = []; for (let id = n; id >= 1 && ids.length < 60; id--) ids.push(id);
+    const own = await owners(ids);
+    for (const m of await metas(ids)) P[m[0] - 1] = m;
+    all = ids.map(id => ({ id, to: own[id] || "0x0000000000000000000000000000000000000000", tx: null, block: 0 }));
+    $("rows").innerHTML = all.map(m => {
+      const p = P[m.id - 1] || [m.id, ""], reserve = m.id <= 24;
+      return `<tr><td><div class="piece"><img src="thumbs/${pad4(m.id)}.jpg" alt="" loading="lazy" width="52" height="52">
+        <div style="min-width:0"><b>#${pad4(m.id)}${reserve ? '<span class="tag">Reserve</span>' : ""}</b><span>${esc(p[1])}</span></div></div></td>
+        <td class="mono">${own[m.id] ? `<a href="${UNSAID.explorer}/address/${m.to}" target="_blank" rel="noopener">${shortAddr(m.to)}</a>` : "—"}</td>
+        <td class="mono">—</td>
+        <td class="mono"><a href="${UNSAID.explorer}/nft/${UNSAID.contract}/${m.id}" target="_blank" rel="noopener">View</a></td></tr>`;
+    }).join("") + `<tr><td colspan="4" class="state">Mint times aren't available from public nodes right now. Each piece links to its page on BscScan.</td></tr>`;
+    $("sMinters").textContent = new Set(Object.values(own).map(a => a.toLowerCase())).size.toLocaleString("en-US");
+    $("sLast").textContent = "#" + pad4(n);
+    document.querySelectorAll(".stats .label")[2].textContent = "Latest piece";
+  } catch (e) {
+    $("state").innerHTML = `Couldn't reach BNB Chain just now. Refresh in a moment, or see every mint on <a href="https://bscscan.com/token/${UNSAID.contract}" target="_blank" rel="noopener">BscScan</a>.`;
+  }
+}
 
 /* new mints since the last look, added to the top */
 async function poll() {
   try {
     const latest = parseInt(await rpc("eth_blockNumber", []), 16);
     if (latest <= lastBlock) return;
-    const logs = await rpc("eth_getLogs", [{ address: UNSAID.contract, fromBlock: "0x" + (lastBlock + 1).toString(16), toBlock: "0x" + latest.toString(16), topics: [UNSAID.TRANSFER, UNSAID.ZERO_TOPIC] }]);
+    if (!lastBlock) return;
+    const logs = await getLogs({ address: UNSAID.contract, fromBlock: "0x" + (lastBlock + 1).toString(16), toBlock: "0x" + latest.toString(16), topics: [UNSAID.TRANSFER, UNSAID.ZERO_TOPIC] });
     lastBlock = latest;
     const fresh = logs.map(l => ({ id: parseInt(l.topics[3], 16), to: "0x" + l.topics[2].slice(-40), tx: l.transactionHash, block: parseInt(l.blockNumber, 16) }))
       .filter(m => !seen.has(m.tx + m.id)).sort((a, b) => b.block - a.block || b.id - a.id);

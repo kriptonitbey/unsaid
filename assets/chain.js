@@ -65,24 +65,47 @@ async function owners(ids) {
   return out;
 }
 
+/* public endpoints that serve eth_getLogs; many BNB Chain RPCs refuse or limit it */
+const LOG_RPCS = ["https://bsc.drpc.org", "https://bsc-rpc.publicnode.com", "https://binance.llamarpc.com", "https://bsc-mainnet.public.blastapi.io", "https://bsc-dataseed.bnbchain.org"];
+async function rpcAt(url, method, params, ms = 9000) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ms);
+  try {
+    const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }), signal: ctl.signal });
+    const j = await res.json();
+    if (j.error || j.result === undefined) throw new Error((j.error && j.error.message) || "no result");
+    return j.result;
+  } finally { clearTimeout(timer); }
+}
+let _logIndex = 0;
+async function getLogs(filter) {
+  let lastErr;
+  for (let k = 0; k < LOG_RPCS.length; k++) {
+    const i = (_logIndex + k) % LOG_RPCS.length;
+    try { const r = await rpcAt(LOG_RPCS[i], "eth_getLogs", [filter]); if (!Array.isArray(r)) throw new Error("bad logs"); _logIndex = i; return r; }
+    catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error("logs unavailable");
+}
+
 /* most recent mints, newest first: walks back from the latest block in chunks until it has `limit` mints or reaches the deploy block */
 async function recentMints(limit = 60, onProgress) {
   const latest = parseInt(await rpc("eth_blockNumber", []), 16);
-  let to = latest, size = 5000, found = [], chunks = 0;
-  while (to >= UNSAID.deployBlock && found.length < limit && chunks < 120) {
+  let to = latest, size = 3000, found = [], chunks = 0, fails = 0;
+  while (to >= UNSAID.deployBlock && found.length < limit && chunks < 200) {
     const from = Math.max(UNSAID.deployBlock, to - size + 1);
     try {
-      const logs = await rpc("eth_getLogs", [{
+      const logs = await getLogs({
         address: UNSAID.contract, fromBlock: "0x" + from.toString(16), toBlock: "0x" + to.toString(16),
         topics: [UNSAID.TRANSFER, UNSAID.ZERO_TOPIC]
-      }]);
+      });
       for (const l of logs.reverse()) {
         found.push({ id: parseInt(l.topics[3], 16), to: "0x" + l.topics[2].slice(-40), tx: l.transactionHash, block: parseInt(l.blockNumber, 16) });
       }
-      to = from - 1; chunks++;
+      to = from - 1; chunks++; fails = 0;
       if (onProgress) onProgress(found.length, (latest - to) / Math.max(1, latest - UNSAID.deployBlock));
     } catch (e) {
-      if (size <= 250) throw e;
+      fails++;
+      if (size <= 200 || fails > 6) throw e;
       size = Math.floor(size / 2);                       // the node wants a smaller range
     }
   }
