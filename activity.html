@@ -89,7 +89,7 @@ function row(m, fresh) {
       <div style="min-width:0"><b>#${pad4(m.id)}${reserve ? '<span class="tag">Reserve</span>' : ""}</b><span>${esc(p[1])}</span></div></div></td>
     <td class="mono"><a href="${UNSAID.explorer}/address/${m.to}" target="_blank" rel="noopener">${shortAddr(m.to)}</a></td>
     <td class="mono" ${when ? `title="${new Date(when).toLocaleString()}"` : ""} data-t="${when || ""}">${when ? ago(when) : "—"}</td>
-    <td class="mono"><a href="${UNSAID.explorer}/tx/${m.tx}" target="_blank" rel="noopener">${m.tx.slice(0, 10)}…</a></td></tr>`;
+    <td class="mono"><a href="${UNSAID.explorer}/tx/${m.tx}" target="_blank" rel="noopener">${m.tx.slice(0, 8)}…${m.tx.slice(-4)}</a></td></tr>`;
 }
 function stats() {
   $("sMinters").textContent = new Set(all.map(m => m.to.toLowerCase())).size.toLocaleString("en-US");
